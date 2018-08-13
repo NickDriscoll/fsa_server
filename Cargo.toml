@@ -1,0 +1,7 @@
+[package]
+name = "four_swords_clone_server"
+version = "0.1.0"
+authors = ["Nick Driscoll <nick.a.mavros@gmail.com>"]
+
+[dependencies]
+sdl2 = "0.31.0"
