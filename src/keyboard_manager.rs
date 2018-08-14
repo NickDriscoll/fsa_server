@@ -5,19 +5,19 @@ use sdl2::EventPump;
 use sdl2::keyboard::Keycode;
 use std::collections::HashMap;
 
-pub struct KeyboardManager {
-	event_pump: EventPump,
+pub struct KeyboardManager<'a> {
+	event_pump: &'a EventPump,
 	keys_to_commands: HashMap<Keycode, fn()>
 }
 
-pub fn new(event_pump: EventPump) -> KeyboardManager {
+pub fn new(event_pump: &EventPump) -> KeyboardManager {
 	KeyboardManager {
 		event_pump: event_pump,
 		keys_to_commands: HashMap::new()
 	}
 }
 
-impl KeyboardManager {
+impl<'a> KeyboardManager<'a> {
 	pub fn handle_keyboard(&mut self) {
 		for event in self.event_pump.poll_iter() {
 			match event {
