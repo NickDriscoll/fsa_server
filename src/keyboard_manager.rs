@@ -8,7 +8,7 @@ use command::Command;
 
 pub struct KeyboardManager {
 	event_pump: EventPump,
-	keys_to_commands: HashMap<Keycode, Box<T: Command>>
+	keys_to_commands: HashMap<Keycode, Command>
 }
 
 pub fn new(event_pump: EventPump) -> KeyboardManager {
@@ -22,7 +22,7 @@ impl KeyboardManager {
 	pub fn handle_keyboard(&mut self) {
 		for event in self.event_pump.poll_iter() {
 			match event {
-				Event::KeyDown {keycode: Some(Keycode::Q), ..} => {
+				Event::Quit => {
 
 				}
 				Event::KeyDown {keycode: Some(value), ..} => {
@@ -35,7 +35,7 @@ impl KeyboardManager {
 		}
 	}
 
-	pub fn add_mapping(&mut self, keycode: Keycode, command: Box<T: Command>) {
+	pub fn add_mapping(&mut self, keycode: Keycode, command: Command) {
 
 	}
 }

@@ -1,3 +1,3 @@
-pub trait Command {
-	fn execute();
+pub struct Command {
+	
 }
