@@ -26,7 +26,7 @@ impl Player {
 		self.position.x -= SPEED;
 	}
 
-	pub fn move_right(&mut self) {
+	fn move_right(&mut self) {
 		self.position.x += SPEED;
 	}
 
@@ -34,7 +34,7 @@ impl Player {
 		self.position.y -= SPEED;
 	}
 
-	fn move_down(&mut self) {
+	pub fn move_down(&mut self) {
 		self.position.y += SPEED;
 	}
 }

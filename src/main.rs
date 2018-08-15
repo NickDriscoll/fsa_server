@@ -20,16 +20,18 @@ fn main() {
 		.unwrap();
 
 	let mut canvas = window.into_canvas().build().unwrap();
-	let event_pump = sdl_context.event_pump().unwrap();
-
-	//Initialize keyboard manager
-	let mut keyboard_manager = keyboard_manager::new(event_pump);
-
-	//Add mapping to close the game when you presss Escape
-	keyboard_manager.add_binding(Keycode::Escape, || { process::exit(0); });
+	let mut event_pump = sdl_context.event_pump().unwrap();
 
 	//Create player
 	let mut player = player::new(vector2::new(100, 200));
+
+	//Initialize keyboard manager
+	let mut keyboard_manager = keyboard_manager::new(&mut event_pump);
+
+	//Add mapping to close the game when you presss Escape
+	keyboard_manager.add_binding(Keycode::Escape, Box::new(|| { process::exit(0); }));
+	keyboard_manager.add_binding(Keycode::Q, Box::new(|| { process::exit(0); }));
+	keyboard_manager.add_binding(Keycode::Down, Box::new(|| { player.move_down(); }));
 
 	//Initialize vector of entities
 	let mut entities: Vec<&mut Entity> = Vec::new();
@@ -38,7 +40,7 @@ fn main() {
 	entities.push(&mut player);
 	'running: loop {
 		//Handle input
-		keyboard_manager.handle_keyboard();
+		keyboard_manager.handle_input();
 
 		canvas.set_draw_color(Color::RGB(0, 255, 255));
 		canvas.clear();
