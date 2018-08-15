@@ -4,10 +4,11 @@ use sdl2::event::Event;
 use sdl2::EventPump;
 use sdl2::keyboard::Keycode;
 use std::collections::HashMap;
+use command::Command;
 
 pub struct KeyboardManager<'a> {
 	event_pump: &'a mut EventPump,
-	keys_to_commands: HashMap<Keycode, Box<FnMut()>>
+	keys_to_commands: HashMap<Keycode, Command<'a>>
 }
 
 pub fn new(event_pump: &mut EventPump) -> KeyboardManager {
@@ -23,8 +24,15 @@ impl<'a> KeyboardManager<'a> {
 			match event {
 				Event::KeyDown {keycode: Some(value), ..} => {
 					match self.keys_to_commands.get_mut(&value) {
-						Some(command) => {
-							command();
+						Some(command_enum) => {
+							match command_enum {
+								Command::Quit(command) => {
+									command.execute();
+								}
+								Command::MoveRight(command) => {
+									command.execute();
+								}
+							}
 						}
 						None => {
 							println!("You pressed the unmapped key: {}", value);
@@ -36,7 +44,7 @@ impl<'a> KeyboardManager<'a> {
 		}
 	}
 
-	pub fn add_binding(&mut self, keycode: Keycode, command: Box<FnMut()>) {
+	pub fn add_binding(&mut self, keycode: Keycode, command: Command<'a>) {
 		self.keys_to_commands.insert(keycode, command);
 	}
 }
