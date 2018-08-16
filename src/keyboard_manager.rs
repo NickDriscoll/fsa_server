@@ -54,6 +54,6 @@ impl<'a> KeyboardManager<'a> {
 	}
 
 	pub fn add_binding(&mut self, keycode: Keycode, command: Command<'a>) {
-		self.keys_to_commands.insert(keycode, command);
+		self.keys_to_commands.insert(keycode, command);	
 	}
 }

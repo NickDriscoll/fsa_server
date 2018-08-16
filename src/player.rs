@@ -37,6 +37,16 @@ impl Player {
 	pub fn move_down(&mut self) {
 		self.velocity.y = SPEED;
 	}
+
+	pub fn halt_x_velocity(&mut self)
+	{
+		self.velocity.x = 0;
+	}
+
+	pub fn halt_y_velocity(&mut self)
+	{
+		self.velocity.y = 0;
+	}
 }
 
 impl Entity for Player {
