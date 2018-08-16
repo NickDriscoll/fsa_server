@@ -14,6 +14,9 @@ use std::cell;
 use command::Command;
 use command::quit_command;
 use command::move_right_command;
+use command::move_left_command;
+use command::move_up_command;
+use command::move_down_command;
 
 fn main() {
 	let sdl_context = sdl2::init().unwrap();
@@ -36,6 +39,9 @@ fn main() {
 	keyboard_manager.add_binding(Keycode::Escape, Command::Quit(quit_command::new()));
 	keyboard_manager.add_binding(Keycode::Q, Command::Quit(quit_command::new()));
 	keyboard_manager.add_binding(Keycode::Right, Command::MoveRight(move_right_command::new(&player)));
+	keyboard_manager.add_binding(Keycode::Left, Command::MoveLeft(move_left_command::new(&player)));
+	keyboard_manager.add_binding(Keycode::Up, Command::MoveUp(move_up_command::new(&player)));
+	keyboard_manager.add_binding(Keycode::Down, Command::MoveDown(move_down_command::new(&player)));
 
 	//Initialize vector of entities
 	let mut entities: Vec<&cell::RefCell<Entity>> = Vec::new();

@@ -7,7 +7,7 @@ use sdl2::video::Window;
 use vector2;
 use entity::Entity;
 
-const SPEED: i32 = 5;
+const SPEED: i32 = 1;
 
 pub struct Player {
 	position: vector2::Vector2,
@@ -22,20 +22,20 @@ pub fn new(position: vector2::Vector2) -> Player {
 }
 
 impl Player {
-	fn move_left(&mut self) {
-		self.position.x -= SPEED;
+	pub fn move_left(&mut self) {
+		self.velocity.x = -SPEED;
 	}
 
 	pub fn move_right(&mut self) {
-		self.position.x += SPEED;
+		self.velocity.x = SPEED;
 	}
 
-	fn move_up(&mut self) {
-		self.position.y -= SPEED;
+	pub fn move_up(&mut self) {
+		self.velocity.y = -SPEED;
 	}
 
 	pub fn move_down(&mut self) {
-		self.position.y += SPEED;
+		self.velocity.y = SPEED;
 	}
 }
 

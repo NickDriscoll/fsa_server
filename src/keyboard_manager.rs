@@ -32,6 +32,15 @@ impl<'a> KeyboardManager<'a> {
 								Command::MoveRight(command) => {
 									command.execute();
 								}
+								Command::MoveLeft(command) => {
+									command.execute();
+								}
+								Command::MoveUp(command) => {
+									command.execute();
+								}
+								Command::MoveDown(command) => {
+									command.execute();
+								}
 							}
 						}
 						None => {

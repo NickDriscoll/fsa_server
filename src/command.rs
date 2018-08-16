@@ -2,10 +2,16 @@
 
 use command::quit_command::QuitCommand;
 use command::move_right_command::MoveRightCommand;
+use command::move_left_command::MoveLeftCommand;
+use command::move_up_command::MoveUpCommand;
+use command::move_down_command::MoveDownCommand;
 
 pub enum Command<'a> {
 	Quit(QuitCommand),
-	MoveRight(MoveRightCommand<'a>)
+	MoveRight(MoveRightCommand<'a>),
+	MoveLeft(MoveLeftCommand<'a>),
+	MoveUp(MoveUpCommand<'a>),
+	MoveDown(MoveDownCommand<'a>)
 }
 
 pub mod quit_command {
@@ -44,6 +50,69 @@ pub mod move_right_command {
 	impl<'a> MoveRightCommand<'a> {
 		pub fn execute(&mut self) {
 			self.player.borrow_mut().move_right();
+		}
+	}
+}
+
+pub mod move_left_command {
+	use player::Player;
+	use std::cell;
+
+	pub struct MoveLeftCommand<'a> {
+		player: &'a cell::RefCell<Player>
+	}
+
+	pub fn new<'a>(p: &'a cell::RefCell<Player>) -> MoveLeftCommand<'a> {
+		MoveLeftCommand {
+			player: p
+		}
+	}
+
+	impl<'a> MoveLeftCommand<'a> {
+		pub fn execute(&self) {
+			self.player.borrow_mut().move_left();
+		}
+	}
+}
+
+pub mod move_up_command {
+	use player::Player;
+	use std::cell;
+
+	pub struct MoveUpCommand<'a> {
+		player: &'a cell::RefCell<Player>
+	}
+
+	pub fn new<'a>(p: &'a cell::RefCell<Player>) -> MoveUpCommand<'a> {
+		MoveUpCommand {
+			player: p
+		}
+	}
+
+	impl<'a> MoveUpCommand<'a> {
+		pub fn execute(&self) {
+			self.player.borrow_mut().move_up();
+		}
+	}
+}
+
+pub mod move_down_command {
+	use player::Player;
+	use std::cell;
+
+	pub struct MoveDownCommand<'a> {
+		player: &'a cell::RefCell<Player>
+	}
+
+	pub fn new<'a>(p: &'a cell::RefCell<Player>) -> MoveDownCommand<'a> {
+		MoveDownCommand {
+			player: p
+		}
+	}
+
+	impl<'a> MoveDownCommand<'a> {
+		pub fn execute(&self) {
+			self.player.borrow_mut().move_down();
 		}
 	}
 }
