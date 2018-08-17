@@ -7,53 +7,68 @@ use std::collections::HashMap;
 use command::Command;
 
 pub struct KeyboardManager<'a> {
-	event_pump: &'a mut EventPump,
-	keys_to_commands: HashMap<Keycode, Command<'a>>
+	keydown_commands: HashMap<Keycode, Command<'a>>,
+	keyup_commands: HashMap<Keycode, Command<'a>>
 }
 
-pub fn new(event_pump: &mut EventPump) -> KeyboardManager {
+pub fn new<'a>() -> KeyboardManager<'a> {
 	KeyboardManager {
-		event_pump: event_pump,
-		keys_to_commands: HashMap::new()
+		keydown_commands: HashMap::new(),
+		keyup_commands: HashMap::new()
 	}
 }
 
 impl<'a> KeyboardManager<'a> {
-	pub fn handle_input(&mut self) {
-		for event in self.event_pump.poll_iter() {
-			match event {
-				Event::KeyDown {keycode: Some(value), ..} => {
-					match self.keys_to_commands.get_mut(&value) {
-						Some(command_enum) => {
-							match command_enum {
-								Command::Quit(command) => {
-									command.execute();
-								}
-								Command::MoveRight(command) => {
-									command.execute();
-								}
-								Command::MoveLeft(command) => {
-									command.execute();
-								}
-								Command::MoveUp(command) => {
-									command.execute();
-								}
-								Command::MoveDown(command) => {
-									command.execute();
-								}
-							}
-						}
-						None => {
-							println!("You pressed the unmapped key: {}", value);
-						}
+	pub fn handle_keydown_event(&mut self, keycode: Keycode) {
+		match self.keydown_commands.get_mut(&keycode) {
+			Some(command_enum) => {
+				match command_enum {
+					Command::Quit(command) => {
+						command.execute();
 					}
+					Command::MoveDown(command) => {
+						command.execute();
+					}
+					Command::MoveUp(command) => {
+						command.execute();
+					}
+					Command::MoveLeft(command) => {
+						command.execute();
+					}
+					Command::MoveRight(command) => {
+						command.execute();
+					}
+					_ => { }
 				}
-				_ => { }
+			}
+			None => {
+				println!("You pressed the unbound key: {}", keycode);
 			}
 		}
 	}
 
-	pub fn add_binding(&mut self, keycode: Keycode, command: Command<'a>) {
-		self.keys_to_commands.insert(keycode, command);	
+	pub fn handle_keyup_event(&mut self, keycode: Keycode) {
+		match self.keyup_commands.get_mut(&keycode) {
+			Some(command_enum) => {
+				match command_enum {
+					Command::HaltX(command) => {
+						command.execute();
+					}
+					Command::HaltY(command) => {
+						command.execute();
+					}
+					_ => { }
+				}
+			}
+			None => { }
+		}
+	}
+
+	pub fn add_keydown_binding(&mut self, keycode: Keycode, command: Command<'a>) {
+		self.keydown_commands.insert(keycode, command);	
+	}
+
+	pub fn add_keyup_binding(&mut self, keycode: Keycode, command: Command<'a>) {
+		self.keyup_commands.insert(keycode, command);
 	}
 }
