@@ -1,9 +1,9 @@
-pub struct Vector2 {
-	pub x: i32,
-	pub y: i32
+pub struct Vector2<T> {
+	pub x: T,
+	pub y: T
 }
 
-pub fn new(x: i32, y: i32) -> Vector2 {
+pub fn new<T>(x: T, y: T) -> Vector2<T> {
 	Vector2 {
 		x: x,
 		y: y

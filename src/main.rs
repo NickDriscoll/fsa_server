@@ -12,6 +12,7 @@ use sdl2::keyboard::Keycode;
 use entity::Entity;
 use std::vec::Vec;
 use std::cell;
+use std::time::Instant;
 use command::Command;
 use command::quit_command;
 use command::move_right_command;
@@ -33,7 +34,7 @@ fn main() {
 	let event_pump = sdl_context.event_pump().unwrap();
 
 	//Create player
-	let player = cell::RefCell::new(player::new(vector2::new(100, 200)));
+	let player = cell::RefCell::new(player::new(vector2::new(100.0, 200.0)));
 
 	//Initialize keyboard manager
 	let mut keyboard_manager = keyboard_manager::new();
@@ -54,23 +55,27 @@ fn main() {
 	//Initialize event handler
 	let mut event_handler = event_handler::new(event_pump, &mut keyboard_manager);
 
-
 	//Initialize vector of entities
 	let mut entities: Vec<&cell::RefCell<Entity>> = Vec::new();
 
 	//Add player to entities
 	entities.push(&player);
 
+	let mut previous_instant = Instant::now();
+
 	loop {
+		let current_instant = Instant::now();
+
 		//Handle events
 		event_handler.handle_events();
 
+		//Clear the screen
 		canvas.set_draw_color(Color::RGB(0, 255, 255));
 		canvas.clear();
 		
 		//Update entities
 		for entity in entities.iter_mut() {
-			entity.borrow_mut().update();
+			entity.borrow_mut().update(current_instant.duration_since(previous_instant));
 		}
 
 		//Draw entities
@@ -79,5 +84,6 @@ fn main() {
 		}
 
 		canvas.present();
+		previous_instant = current_instant;
 	}
 }
