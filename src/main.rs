@@ -6,6 +6,7 @@ mod entity;
 mod command;
 mod keyboard_manager;
 mod event_handler;
+mod network_manager;
 
 use sdl2::pixels::Color;
 use sdl2::keyboard::Keycode;
@@ -52,6 +53,9 @@ fn main() {
 	keyboard_manager.add_keyup_binding(Keycode::Left, Command::HaltX(halt_x_command::new(&player)));
 	keyboard_manager.add_keyup_binding(Keycode::Right, Command::HaltX(halt_x_command::new(&player)));
 
+	//Initialize network manager
+	let mut network_manager = network_manager::begin_listening();
+
 	//Initialize event handler
 	let mut event_handler = event_handler::new(event_pump, &mut keyboard_manager);
 
@@ -68,6 +72,9 @@ fn main() {
 
 		//Handle events
 		event_handler.handle_events();
+
+		//Handle network input
+		//network_manager.handle_input();
 
 		//Clear the screen
 		canvas.set_draw_color(Color::RGB(0, 255, 255));
