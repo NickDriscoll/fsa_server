@@ -25,11 +25,13 @@ pub fn begin_listening() -> NetworkManager {
 					println!("Client received!");
 				}
 				Err(e) => {
-
+					println!("There was an error receiving a client.");
 				}
 			}
 		}
 	});
+
+	println!("Started listening...");
 
 	NetworkManager {
 		listener_thread
