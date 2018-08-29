@@ -74,7 +74,7 @@ fn main() {
 		event_handler.handle_events();
 
 		//Handle network input
-		//network_manager.handle_input();
+		network_manager.handle_input();
 
 		//Clear the screen
 		canvas.set_draw_color(Color::RGB(0, 255, 255));

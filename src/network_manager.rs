@@ -5,6 +5,7 @@ use std::thread;
 use std::panic;
 use std::vec::Vec;
 use std::sync::mpsc;
+use std::io::Read;
 
 const MAX_PLAYERS: usize = 4;
 const BUFFER_SIZE: usize = 8;
@@ -33,7 +34,9 @@ pub fn begin_listening() -> NetworkManager {
 
 		for stream in listener.incoming() {
 			println!("Stream detected.");
-			match tx.send(stream.unwrap()) {
+			let stream = stream.unwrap();
+			stream.set_nonblocking(true);
+			match tx.send(stream) {
 				Err(e) => {
 					println!("An error occurred while sending data over a channel: {:?}", e);
 				}
@@ -60,15 +63,30 @@ impl NetworkManager {
 					self.phones.push(stream);
 				}
 			}
-			Err(e) => {
-				println!("{:?}", e);
-			}
+			Err(e) => { }
 		}
+
+		//println!("phones: {:?}", self.phones);
 
 		//For each stream, emit commands based on what's in the stream buffer
 		let mut buffer: [u8; BUFFER_SIZE] = [0; BUFFER_SIZE];
-		for stream in self.phones.iter() {
+		let mut remove_indices: Vec<usize> = Vec::new();
+		for (i, stream) in self.phones.iter_mut().enumerate() {
+			match stream.read(&mut buffer) {
+				Ok(0) => {					
+					println!("Phone disconnected.");
+					remove_indices.push(i);
+				}
+				Ok(n) => {
+					println!("Received {} bytes.", n);
+				}
+				Err(e) => { }
+			}
+		}
 
+		//Remove disconnected phones
+		for i in remove_indices {
+			self.phones.remove(i);
 		}
 	}
 }
