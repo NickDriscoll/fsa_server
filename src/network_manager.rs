@@ -8,7 +8,7 @@ use std::sync::mpsc;
 use std::io::Read;
 
 const MAX_PLAYERS: usize = 4;
-const BUFFER_SIZE: usize = 8;
+const BUFFER_SIZE: usize = 1;
 
 pub struct NetworkManager {
 	listener_thread: thread::JoinHandle<()>,
@@ -78,9 +78,12 @@ impl NetworkManager {
 					remove_indices.push(i);
 				}
 				Ok(n) => {
+					//Command emission actually happens in this case
 					println!("Received {} bytes.", n);
 				}
-				Err(e) => { }
+				Err(e) => {
+					println!("{:?}", e);
+				}
 			}
 		}
 
