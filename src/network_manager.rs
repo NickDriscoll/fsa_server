@@ -13,6 +13,7 @@ const BUFFER_SIZE: usize = 1;
 pub struct NetworkManager {
 	listener_thread: thread::JoinHandle<()>,
 	phones: Vec<TcpStream>,
+	remove_indices: Vec<usize>,
 	rx: mpsc::Receiver<TcpStream>
 }
 
@@ -35,7 +36,7 @@ pub fn begin_listening() -> NetworkManager {
 		for stream in listener.incoming() {
 			println!("Stream detected.");
 			let stream = stream.unwrap();
-			stream.set_nonblocking(true);
+			//stream.set_nonblocking(true);
 			match tx.send(stream) {
 				Err(e) => {
 					println!("An error occurred while sending data over a channel: {:?}", e);
@@ -50,6 +51,7 @@ pub fn begin_listening() -> NetworkManager {
 	NetworkManager {
 		listener_thread,
 		phones: Vec::with_capacity(MAX_PLAYERS),
+		remove_indices: Vec::with_capacity(MAX_PLAYERS),
 		rx
 	}
 }
@@ -63,19 +65,16 @@ impl NetworkManager {
 					self.phones.push(stream);
 				}
 			}
-			Err(e) => { }
+			_ => { }
 		}
-
-		//println!("phones: {:?}", self.phones);
 
 		//For each stream, emit commands based on what's in the stream buffer
 		let mut buffer: [u8; BUFFER_SIZE] = [0; BUFFER_SIZE];
-		let mut remove_indices: Vec<usize> = Vec::new();
 		for (i, stream) in self.phones.iter_mut().enumerate() {
 			match stream.read(&mut buffer) {
 				Ok(0) => {					
 					println!("Phone disconnected.");
-					remove_indices.push(i);
+					self.remove_indices.push(i);
 				}
 				Ok(n) => {
 					//Command emission actually happens in this case
@@ -88,8 +87,9 @@ impl NetworkManager {
 		}
 
 		//Remove disconnected phones
-		for i in remove_indices {
-			self.phones.remove(i);
+		for i in self.remove_indices.iter() {
+			self.phones.remove(*i);
 		}
+		self.remove_indices.clear();
 	}
 }
