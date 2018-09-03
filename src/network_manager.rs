@@ -36,7 +36,7 @@ pub fn begin_listening() -> NetworkManager {
 		for stream in listener.incoming() {
 			println!("Stream detected.");
 			let stream = stream.unwrap();
-			//stream.set_nonblocking(true);
+			stream.set_nonblocking(true);
 			match tx.send(stream) {
 				Err(e) => {
 					println!("An error occurred while sending data over a channel: {:?}", e);
@@ -78,11 +78,11 @@ impl NetworkManager {
 				}
 				Ok(n) => {
 					//Command emission actually happens in this case
-					println!("Received {} bytes.", n);
+					if buffer[0] != 0 {
+						println!("Received {:#x}", buffer[0]);
+					}
 				}
-				Err(e) => {
-					println!("{:?}", e);
-				}
+				Err(e) => { }
 			}
 		}
 
