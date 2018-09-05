@@ -7,6 +7,7 @@ use command::move_up_command::MoveUpCommand;
 use command::move_down_command::MoveDownCommand;
 use command::halt_x_command::HaltX;
 use command::halt_y_command::HaltY;
+use command::Command::*;
 
 pub enum Command<'a> {
 	Quit(QuitCommand),
@@ -16,6 +17,34 @@ pub enum Command<'a> {
 	MoveDown(MoveDownCommand<'a>),
 	HaltX(HaltX<'a>),
 	HaltY(HaltY<'a>)
+}
+
+impl<'a> Command<'a> {
+	pub fn execute(&mut self) {
+		match self {
+			Quit(c) => {
+				c.execute();
+			}
+			MoveRight(c) => {
+				c.execute();
+			}
+			MoveLeft(c) => {
+				c.execute();
+			}
+			MoveUp(c) => {
+				c.execute();
+			}
+			MoveDown(c) => {
+				c.execute();
+			}
+			HaltX(c) => {
+				c.execute();
+			}
+			HaltY(c) => {
+				c.execute();
+			}
+		}
+	}
 }
 
 pub mod quit_command {

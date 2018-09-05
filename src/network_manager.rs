@@ -87,13 +87,8 @@ impl<'a> NetworkManager<'a> {
 					for i in 1..8 {
 						if (i & buffer[0]) != 0 {
 							match self.bitmask_map.get_mut(&(i & buffer[0])) {
-								Some(command_enum) => {
-									match command_enum {
-										Command::MoveDown(command) => {
-											command.execute();
-										}
-										_ => {}
-									}
+								Some(command) => {
+									command.execute();
 								}
 								None => {
 

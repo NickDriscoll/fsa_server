@@ -21,25 +21,8 @@ pub fn new<'a>() -> KeyboardManager<'a> {
 impl<'a> KeyboardManager<'a> {
 	pub fn handle_keydown_event(&mut self, keycode: Keycode) {
 		match self.keydown_commands.get_mut(&keycode) {
-			Some(command_enum) => {
-				match command_enum {
-					Command::Quit(command) => {
-						command.execute();
-					}
-					Command::MoveDown(command) => {
-						command.execute();
-					}
-					Command::MoveUp(command) => {
-						command.execute();
-					}
-					Command::MoveLeft(command) => {
-						command.execute();
-					}
-					Command::MoveRight(command) => {
-						command.execute();
-					}
-					_ => { }
-				}
+			Some(command) => {
+				command.execute();
 			}
 			None => {
 				println!("You pressed the unbound key: {}", keycode);
