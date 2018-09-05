@@ -16,7 +16,7 @@ pub struct NetworkManager<'a> {
 	phones: Vec<TcpStream>,
 	remove_indices: Vec<usize>,
 	rx: mpsc::Receiver<TcpStream>,
-	bitmask_map: HashMap<u8, Command<'a>>
+	bitmask_maps: Vec<HashMap<u8, Command<'a>>>
 }
 
 //Start a thread to listen for incoming client connections
@@ -50,12 +50,18 @@ pub fn begin_listening<'a>() -> NetworkManager<'a> {
 
 	println!("Started listening...");
 
+	//Each player will have their own HashMap
+	let mut bitmask_maps = Vec::with_capacity(MAX_PLAYERS);
+	for i in 0..MAX_PLAYERS {
+		bitmask_maps.push(HashMap::new());
+	}
+
 	NetworkManager {
 		listener_thread,
 		phones: Vec::with_capacity(MAX_PLAYERS),
 		remove_indices: Vec::with_capacity(MAX_PLAYERS),
 		rx,
-		bitmask_map: HashMap::new()
+		bitmask_maps
 	}
 }
 
@@ -84,17 +90,15 @@ impl<'a> NetworkManager<'a> {
 					if buffer[0] != 0 {
 						println!("Received {:#x}", buffer[0]);
 					}
-					for i in 1..8 {
-						if (i & buffer[0]) != 0 {
-							match self.bitmask_map.get_mut(&(i & buffer[0])) {
-								Some(command) => {
-									command.execute();
-								}
-								None => {
-
-								}
+					for j in 1..8 {
+						match self.bitmask_maps[i].get_mut(&((1 << j) & buffer[0])) {
+							Some(command) => {
+								command.execute();
 							}
-						}
+							None => {
+
+							}
+						}						
 					}
 				}
 				Err(e) => { }
@@ -108,7 +112,7 @@ impl<'a> NetworkManager<'a> {
 		self.remove_indices.clear();
 	}
 
-	pub fn add_touchdown_binding(&mut self, mask: u8, command: Command<'a>) {
-		self.bitmask_map.insert(mask, command);
+	pub fn add_touchdown_binding(&mut self, mask: u8, command: Command<'a>, player: usize) {
+		self.bitmask_maps[player - 1].insert(mask, command);
 	}
 }

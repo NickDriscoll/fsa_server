@@ -57,7 +57,7 @@ fn main() {
 	let mut network_manager = network_manager::begin_listening();
 
 	//Add the network bindings
-	network_manager.add_touchdown_binding(0x2, Command::MoveDown(move_down_command::new(&player)));
+	network_manager.add_touchdown_binding(0x2, Command::MoveDown(move_down_command::new(&player)), 1);
 
 	//Initialize event handler
 	let mut event_handler = event_handler::new(event_pump, &mut keyboard_manager);
