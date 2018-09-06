@@ -9,14 +9,15 @@ use std::io::Read;
 use command::Command;
 
 const MAX_PLAYERS: usize = 4;
-const BUFFER_SIZE: usize = 1;
+const BUFFER_SIZE: usize = 2;
 
 pub struct NetworkManager<'a> {
 	listener_thread: thread::JoinHandle<()>,
 	phones: Vec<TcpStream>,
 	remove_indices: Vec<usize>,
 	rx: mpsc::Receiver<TcpStream>,
-	bitmask_maps: Vec<HashMap<u8, Command<'a>>>
+	bitmask_maps_down: Vec<HashMap<u8, Command<'a>>>
+	bitmask_maps_up: Vec<HashMap<u8, Command<'a>>>
 }
 
 //Start a thread to listen for incoming client connections
@@ -51,9 +52,11 @@ pub fn begin_listening<'a>() -> NetworkManager<'a> {
 	println!("Started listening...");
 
 	//Each player will have their own HashMap
-	let mut bitmask_maps = Vec::with_capacity(MAX_PLAYERS);
+	let mut bitmask_maps_down = Vec::with_capacity(MAX_PLAYERS);
+	let mut bitmask_maps_up = Vec::with_capacity(MAX_PLAYERS);
 	for i in 0..MAX_PLAYERS {
-		bitmask_maps.push(HashMap::new());
+		bitmask_maps_down.push(HashMap::new());
+		bitmask_maps_up.push(HashMap::new());
 	}
 
 	NetworkManager {
@@ -61,7 +64,7 @@ pub fn begin_listening<'a>() -> NetworkManager<'a> {
 		phones: Vec::with_capacity(MAX_PLAYERS),
 		remove_indices: Vec::with_capacity(MAX_PLAYERS),
 		rx,
-		bitmask_maps
+		bitmask_maps_down
 	}
 }
 
@@ -90,15 +93,25 @@ impl<'a> NetworkManager<'a> {
 					if buffer[0] != 0 {
 						println!("Received {:#x}", buffer[0]);
 					}
+
+					//Touchdown commands
 					for j in 1..8 {
-						match self.bitmask_maps[i].get_mut(&((1 << j) & buffer[0])) {
+						match self.bitmask_maps_down[i].get_mut(&((1 << j) & buffer[0])) {
 							Some(command) => {
 								command.execute();
 							}
-							None => {
-
-							}
+							None => { }
 						}						
+					}
+
+					//Touchup commands
+					for j in 1..8 {
+						match self.bitmask_maps_up[i].get_mut(&((1 << j) & buffer[1])) {
+							Some(command) => {
+								command.execute();
+							}
+							None => { }
+						}
 					}
 				}
 				Err(e) => { }
@@ -113,6 +126,10 @@ impl<'a> NetworkManager<'a> {
 	}
 
 	pub fn add_touchdown_binding(&mut self, mask: u8, command: Command<'a>, player: usize) {
-		self.bitmask_maps[player - 1].insert(mask, command);
+		self.bitmask_maps_down[player - 1].insert(mask, command);
+	}
+
+	pub fn add_touchup_binding(&mut self, mask: u8, command: Command<'a>, player: usize) {
+		self.bitmask_maps_up[player - 1].insert(mask, command);
 	}
 }
