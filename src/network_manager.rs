@@ -11,12 +11,21 @@ use command::Command;
 const MAX_PLAYERS: usize = 4;
 const BUFFER_SIZE: usize = 2;
 
+pub enum TouchButtons {
+	Left = 0x1,
+	Down = 0x2,
+	Up = 0x4,
+	Right = 0x8,
+	B = 0x10,
+	A = 0x20
+}
+
 pub struct NetworkManager<'a> {
 	listener_thread: thread::JoinHandle<()>,
 	phones: Vec<TcpStream>,
 	remove_indices: Vec<usize>,
 	rx: mpsc::Receiver<TcpStream>,
-	bitmask_maps_down: Vec<HashMap<u8, Command<'a>>>
+	bitmask_maps_down: Vec<HashMap<u8, Command<'a>>>,
 	bitmask_maps_up: Vec<HashMap<u8, Command<'a>>>
 }
 
@@ -64,7 +73,8 @@ pub fn begin_listening<'a>() -> NetworkManager<'a> {
 		phones: Vec::with_capacity(MAX_PLAYERS),
 		remove_indices: Vec::with_capacity(MAX_PLAYERS),
 		rx,
-		bitmask_maps_down
+		bitmask_maps_down,
+		bitmask_maps_up
 	}
 }
 
@@ -95,9 +105,10 @@ impl<'a> NetworkManager<'a> {
 					}
 
 					//Touchdown commands
-					for j in 1..8 {
+					for j in 0..8 {
 						match self.bitmask_maps_down[i].get_mut(&((1 << j) & buffer[0])) {
 							Some(command) => {
+								println!("Executing!");
 								command.execute();
 							}
 							None => { }
@@ -105,7 +116,7 @@ impl<'a> NetworkManager<'a> {
 					}
 
 					//Touchup commands
-					for j in 1..8 {
+					for j in 0..8 {
 						match self.bitmask_maps_up[i].get_mut(&((1 << j) & buffer[1])) {
 							Some(command) => {
 								command.execute();

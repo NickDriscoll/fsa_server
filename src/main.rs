@@ -22,6 +22,7 @@ use command::move_up_command;
 use command::move_down_command;
 use command::halt_x_command;
 use command::halt_y_command;
+use network_manager::TouchButtons;
 
 fn main() {
 	let sdl_context = sdl2::init().unwrap();
@@ -35,6 +36,7 @@ fn main() {
 	let event_pump = sdl_context.event_pump().unwrap();
 
 	//Create player
+	//Consider array of players parallel to the bitmask_maps
 	let player = cell::RefCell::new(player::new(vector2::new(100.0, 200.0)));
 
 	//Initialize keyboard manager
@@ -57,7 +59,15 @@ fn main() {
 	let mut network_manager = network_manager::begin_listening();
 
 	//Add the network bindings
-	network_manager.add_touchdown_binding(0x2, Command::MoveDown(move_down_command::new(&player)), 1);
+	network_manager.add_touchdown_binding(TouchButtons::Left as u8, Command::MoveLeft(move_left_command::new(&player)), 1);
+	network_manager.add_touchdown_binding(TouchButtons::Down as u8, Command::MoveDown(move_down_command::new(&player)), 1);
+	network_manager.add_touchdown_binding(TouchButtons::Up as u8, Command::MoveUp(move_up_command::new(&player)), 1);
+	network_manager.add_touchdown_binding(TouchButtons::Right as u8, Command::MoveRight(move_right_command::new(&player)), 1);
+
+	network_manager.add_touchup_binding(TouchButtons::Left as u8, Command::HaltX(halt_x_command::new(&player)), 1);
+	network_manager.add_touchup_binding(TouchButtons::Right as u8, Command::HaltX(halt_x_command::new(&player)), 1);
+	network_manager.add_touchup_binding(TouchButtons::Down as u8, Command::HaltY(halt_y_command::new(&player)), 1);
+	network_manager.add_touchup_binding(TouchButtons::Up as u8, Command::HaltY(halt_y_command::new(&player)), 1);
 
 	//Initialize event handler
 	let mut event_handler = event_handler::new(event_pump, &mut keyboard_manager);
