@@ -14,7 +14,7 @@ version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "four_swords_clone_server"
+name = "fsaserver"
 version = "0.1.0"
 dependencies = [
  "sdl2 0.31.0 (registry+https://github.com/rust-lang/crates.io-index)",
