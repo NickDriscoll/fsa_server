@@ -10,6 +10,7 @@ mod network_manager;
 
 use sdl2::pixels::Color;
 use sdl2::keyboard::Keycode;
+use sdl2::image;
 use entity::Entity;
 use std::vec::Vec;
 use std::cell;
@@ -27,6 +28,7 @@ use network_manager::TouchButtons;
 fn main() {
 	let sdl_context = sdl2::init().unwrap();
 	let video_subsystem = sdl_context.video().unwrap();
+	let image_context = image::init(image::INIT_PNG).unwrap();
 
 	let window = video_subsystem.window("FSA", 1280, 720)
 		.build()
