@@ -44,8 +44,7 @@ fn main() {
 	//Consider array of players parallel to the bitmask_maps
 	let player = cell::RefCell::new(player::new(vector2::new(100.0, 200.0)));
 
-	let tile_texture = texture_creator.load_texture("assets/grass.png").unwrap();
-	let tile = tile::new(0.0, 0.0, &tile_texture);
+	let background_texture = texture_creator.load_texture("assets/grass.png").unwrap();
 
 	//Initialize keyboard manager
 	let mut keyboard_manager = keyboard_manager::new();
@@ -106,8 +105,10 @@ fn main() {
 			entity.borrow_mut().update(current_instant.duration_since(previous_instant));
 		}
 
+		//Draw background
+		canvas.copy(&background_texture, None, None);
+
 		//Draw entities
-		tile.draw(&mut canvas);
 		for entity in entities.iter() {
 			entity.borrow().draw(&mut canvas);
 		}
