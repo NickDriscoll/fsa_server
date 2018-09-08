@@ -7,10 +7,12 @@ mod command;
 mod keyboard_manager;
 mod event_handler;
 mod network_manager;
+mod tile;
 
 use sdl2::pixels::Color;
 use sdl2::keyboard::Keycode;
 use sdl2::image;
+use sdl2::image::LoadTexture;
 use entity::Entity;
 use std::vec::Vec;
 use std::cell;
@@ -36,10 +38,14 @@ fn main() {
 
 	let mut canvas = window.into_canvas().build().unwrap();
 	let event_pump = sdl_context.event_pump().unwrap();
+	let texture_creator = canvas.texture_creator();
 
 	//Create player
 	//Consider array of players parallel to the bitmask_maps
 	let player = cell::RefCell::new(player::new(vector2::new(100.0, 200.0)));
+
+	let tile_texture = texture_creator.load_texture("assets/grass.png").unwrap();
+	let tile = tile::new(0.0, 0.0, &tile_texture);
 
 	//Initialize keyboard manager
 	let mut keyboard_manager = keyboard_manager::new();
@@ -101,6 +107,7 @@ fn main() {
 		}
 
 		//Draw entities
+		tile.draw(&mut canvas);
 		for entity in entities.iter() {
 			entity.borrow().draw(&mut canvas);
 		}
