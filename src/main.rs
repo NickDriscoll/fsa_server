@@ -7,7 +7,6 @@ mod command;
 mod keyboard_manager;
 mod event_handler;
 mod network_manager;
-mod tile;
 
 use sdl2::pixels::Color;
 use sdl2::keyboard::Keycode;
