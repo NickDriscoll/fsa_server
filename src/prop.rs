@@ -34,6 +34,8 @@ impl<'a> Entity for Prop<'a> {
 	}
 
 	fn draw(&self, canvas: &mut Canvas<Window>) {
-		canvas.copy(&self.texture, self.drawing_box, self.drawing_box);
+		let dest = Rect::new(self.position.x as i32, self.position.y as i32, self.drawing_box.width(), self.drawing_box.height());
+
+		canvas.copy(&self.texture, self.drawing_box, dest);
 	}
 }
