@@ -111,7 +111,6 @@ fn main() {
 
 		//Draw background
 		canvas.copy(&background_texture, None, None);
-
 		//Draw entities
 		for entity in entities.iter() {
 			entity.borrow().draw(&mut canvas);

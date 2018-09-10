@@ -8,7 +8,7 @@ use std::time::Duration;
 use vector2;
 use entity::Entity;
 
-const SPEED: f32 = 500.0;
+const SPEED: f32 = 400.0;
 
 pub struct Player {
 	position: vector2::Vector2<f32>,
@@ -58,6 +58,6 @@ impl Entity for Player {
 
 	fn draw(&self, canvas: &mut Canvas<Window>) {		
 		canvas.set_draw_color(Color::RGB(255, 0, 255));
-		canvas.fill_rect(rect::Rect::new(self.position.x as i32, self.position.y as i32, 50, 50));
+		canvas.fill_rect(rect::Rect::new(self.position.x as i32, self.position.y as i32, 25, 25));
 	}
 }
