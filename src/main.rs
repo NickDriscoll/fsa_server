@@ -7,11 +7,13 @@ mod command;
 mod keyboard_manager;
 mod event_handler;
 mod network_manager;
+mod prop;
 
 use sdl2::pixels::Color;
 use sdl2::keyboard::Keycode;
 use sdl2::image;
 use sdl2::image::LoadTexture;
+use sdl2::rect::Rect;
 use entity::Entity;
 use std::vec::Vec;
 use std::cell;
@@ -39,11 +41,12 @@ fn main() {
 	let event_pump = sdl_context.event_pump().unwrap();
 	let texture_creator = canvas.texture_creator();
 
+	let background_texture = texture_creator.load_texture("assets/grass.png").unwrap();
+	let adobe_texture = texture_creator.load_texture("assets/adobe.png").unwrap();
+
 	//Create player
 	//Consider array of players parallel to the bitmask_maps
 	let player = cell::RefCell::new(player::new(vector2::new(100.0, 200.0)));
-
-	let background_texture = texture_creator.load_texture("assets/grass.png").unwrap();
 
 	//Initialize keyboard manager
 	let mut keyboard_manager = keyboard_manager::new();
@@ -77,11 +80,13 @@ fn main() {
 
 	//Initialize event handler
 	let mut event_handler = event_handler::new(event_pump, &mut keyboard_manager);
+	let house = cell::RefCell::new(prop::new(&adobe_texture, vector2::new(200.0, 100.0), Rect::new(0, 0, 95, 159)));
 
 	//Initialize vector of entities
 	let mut entities: Vec<&cell::RefCell<Entity>> = Vec::new();
 
-	//Add player to entities
+	//Add prop and player to entities
+	entities.push(&house);
 	entities.push(&player);
 
 	let mut previous_instant = Instant::now();
