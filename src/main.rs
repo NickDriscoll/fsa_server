@@ -31,7 +31,6 @@ use network_manager::TouchButtons;
 fn main() {
 	let sdl_context = sdl2::init().unwrap();
 	let video_subsystem = sdl_context.video().unwrap();
-	let image_context = image::init(image::INIT_PNG).unwrap();
 
 	let window = video_subsystem.window("FSA", 1280, 720)
 		.build()
