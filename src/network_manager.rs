@@ -36,7 +36,6 @@ pub fn begin_listening<'a>() -> NetworkManager<'a> {
 	let listener_thread = thread::spawn(move || {
 		let listener = match TcpListener::bind("0.0.0.0:1337") {
 			Ok(r) => {
-				println!("Bound to port 1337.");
 				r
 			}
 			Err(e) => {
