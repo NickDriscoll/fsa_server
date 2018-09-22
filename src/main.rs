@@ -28,6 +28,45 @@ use command::move_down_command;
 use command::halt_x_command;
 use command::halt_y_command;
 use network_manager::TouchButtons;
+use player::Player;
+use keyboard_manager::KeyboardManager;
+use network_manager::NetworkManager;
+
+fn init_keyboard<'a>(player: &'a cell::RefCell<Player>) -> KeyboardManager<'a> {
+	let mut keyboard_manager = keyboard_manager::new();
+
+	//Add key bindings
+	keyboard_manager.add_keydown_binding(Keycode::Escape, Command::Quit(quit_command::new()));
+	keyboard_manager.add_keydown_binding(Keycode::Q, Command::Quit(quit_command::new()));
+	keyboard_manager.add_keydown_binding(Keycode::Right, Command::MoveRight(move_right_command::new(player)));
+	keyboard_manager.add_keydown_binding(Keycode::Left, Command::MoveLeft(move_left_command::new(player)));
+	keyboard_manager.add_keydown_binding(Keycode::Up, Command::MoveUp(move_up_command::new(player)));
+	keyboard_manager.add_keydown_binding(Keycode::Down, Command::MoveDown(move_down_command::new(player)));
+
+	keyboard_manager.add_keyup_binding(Keycode::Up, Command::HaltY(halt_y_command::new(player)));
+	keyboard_manager.add_keyup_binding(Keycode::Down, Command::HaltY(halt_y_command::new(player)));
+	keyboard_manager.add_keyup_binding(Keycode::Left, Command::HaltX(halt_x_command::new(player)));
+	keyboard_manager.add_keyup_binding(Keycode::Right, Command::HaltX(halt_x_command::new(player)));
+
+	keyboard_manager
+}
+
+fn init_network<'a>(player: &'a cell::RefCell<Player>) -> NetworkManager<'a> {
+	let mut network_manager = network_manager::begin_listening();
+
+	//Add the network bindings
+	network_manager.add_touchdown_binding(TouchButtons::Left as u8, Command::MoveLeft(move_left_command::new(player)), 1);
+	network_manager.add_touchdown_binding(TouchButtons::Down as u8, Command::MoveDown(move_down_command::new(player)), 1);
+	network_manager.add_touchdown_binding(TouchButtons::Up as u8, Command::MoveUp(move_up_command::new(player)), 1);
+	network_manager.add_touchdown_binding(TouchButtons::Right as u8, Command::MoveRight(move_right_command::new(player)), 1);
+
+	network_manager.add_touchup_binding(TouchButtons::Left as u8, Command::HaltX(halt_x_command::new(player)), 1);
+	network_manager.add_touchup_binding(TouchButtons::Right as u8, Command::HaltX(halt_x_command::new(player)), 1);
+	network_manager.add_touchup_binding(TouchButtons::Down as u8, Command::HaltY(halt_y_command::new(player)), 1);
+	network_manager.add_touchup_binding(TouchButtons::Up as u8, Command::HaltY(halt_y_command::new(player)), 1);
+
+	network_manager
+}
 
 fn main() {
 	let sdl_context = sdl2::init().unwrap();
@@ -49,37 +88,14 @@ fn main() {
 	let player = cell::RefCell::new(player::new(vector2::new(100.0, 200.0)));
 
 	//Initialize keyboard manager
-	let mut keyboard_manager = keyboard_manager::new();
-
-	//Add mapping to close the game when you presss Escape
-	keyboard_manager.add_keydown_binding(Keycode::Escape, Command::Quit(quit_command::new()));
-	keyboard_manager.add_keydown_binding(Keycode::Q, Command::Quit(quit_command::new()));
-	keyboard_manager.add_keydown_binding(Keycode::Right, Command::MoveRight(move_right_command::new(&player)));
-	keyboard_manager.add_keydown_binding(Keycode::Left, Command::MoveLeft(move_left_command::new(&player)));
-	keyboard_manager.add_keydown_binding(Keycode::Up, Command::MoveUp(move_up_command::new(&player)));
-	keyboard_manager.add_keydown_binding(Keycode::Down, Command::MoveDown(move_down_command::new(&player)));
-
-	keyboard_manager.add_keyup_binding(Keycode::Up, Command::HaltY(halt_y_command::new(&player)));
-	keyboard_manager.add_keyup_binding(Keycode::Down, Command::HaltY(halt_y_command::new(&player)));
-	keyboard_manager.add_keyup_binding(Keycode::Left, Command::HaltX(halt_x_command::new(&player)));
-	keyboard_manager.add_keyup_binding(Keycode::Right, Command::HaltX(halt_x_command::new(&player)));
+	let mut keyboard_manager = init_keyboard(&player);	
 
 	//Initialize network manager
-	let mut network_manager = network_manager::begin_listening();
-
-	//Add the network bindings
-	network_manager.add_touchdown_binding(TouchButtons::Left as u8, Command::MoveLeft(move_left_command::new(&player)), 1);
-	network_manager.add_touchdown_binding(TouchButtons::Down as u8, Command::MoveDown(move_down_command::new(&player)), 1);
-	network_manager.add_touchdown_binding(TouchButtons::Up as u8, Command::MoveUp(move_up_command::new(&player)), 1);
-	network_manager.add_touchdown_binding(TouchButtons::Right as u8, Command::MoveRight(move_right_command::new(&player)), 1);
-
-	network_manager.add_touchup_binding(TouchButtons::Left as u8, Command::HaltX(halt_x_command::new(&player)), 1);
-	network_manager.add_touchup_binding(TouchButtons::Right as u8, Command::HaltX(halt_x_command::new(&player)), 1);
-	network_manager.add_touchup_binding(TouchButtons::Down as u8, Command::HaltY(halt_y_command::new(&player)), 1);
-	network_manager.add_touchup_binding(TouchButtons::Up as u8, Command::HaltY(halt_y_command::new(&player)), 1);
+	let mut network_manager = init_network(&player);
 
 	//Initialize event handler
 	let mut event_handler = event_handler::new(event_pump, &mut keyboard_manager);
+
 	let house = cell::RefCell::new(prop::new(&adobe_texture, vector2::new(200.0, 100.0), Rect::new(0, 0, 95, 159)));
 
 	//Initialize vector of entities
