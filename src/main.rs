@@ -17,7 +17,7 @@ use sdl2::image::LoadTexture;
 use sdl2::rect::Rect;
 use entity::Entity;
 use std::vec::Vec;
-use std::cell;
+use std::cell::RefCell;
 use std::time::Instant;
 use command::Command;
 use command::quit_command;
@@ -32,7 +32,7 @@ use player::Player;
 use keyboard_manager::KeyboardManager;
 use network_manager::NetworkManager;
 
-fn init_keyboard<'a>(player: &'a cell::RefCell<Player>) -> KeyboardManager<'a> {
+fn init_keyboard<'a>(player: &'a RefCell<Player>) -> KeyboardManager<'a> {
 	let mut keyboard_manager = keyboard_manager::new();
 
 	//Add key bindings
@@ -51,7 +51,7 @@ fn init_keyboard<'a>(player: &'a cell::RefCell<Player>) -> KeyboardManager<'a> {
 	keyboard_manager
 }
 
-fn init_network<'a>(player: &'a cell::RefCell<Player>) -> NetworkManager<'a> {
+fn init_network<'a>(player: &'a RefCell<Player>) -> NetworkManager<'a> {
 	let mut network_manager = network_manager::begin_listening();
 
 	//Add the network bindings
@@ -77,6 +77,7 @@ fn main() {
 		.unwrap();
 
 	let mut canvas = window.into_canvas().build().unwrap();
+
 	let event_pump = sdl_context.event_pump().unwrap();
 	let texture_creator = canvas.texture_creator();
 
@@ -84,8 +85,8 @@ fn main() {
 	let adobe_texture = texture_creator.load_texture("assets/adobe.png").unwrap();
 
 	//Create player
-	//Consider array of players parallel to the bitmask_maps
-	let player = cell::RefCell::new(player::new(vector2::new(100.0, 200.0)));
+	//Consider vector of players parallel to the bitmask_maps
+	let player = RefCell::new(player::new(vector2::new(100.0, 200.0)));
 
 	//Initialize keyboard manager
 	let mut keyboard_manager = init_keyboard(&player);	
@@ -96,10 +97,10 @@ fn main() {
 	//Initialize event handler
 	let mut event_handler = event_handler::new(event_pump, &mut keyboard_manager);
 
-	let house = cell::RefCell::new(prop::new(&adobe_texture, vector2::new(200.0, 100.0), Rect::new(0, 0, 95, 159)));
+	let house = RefCell::new(prop::new(&adobe_texture, vector2::new(200.0, 100.0), Rect::new(0, 0, 95, 159)));
 
 	//Initialize vector of entities
-	let mut entities: Vec<&cell::RefCell<Entity>> = Vec::new();
+	let mut entities: Vec<&RefCell<Entity>> = Vec::new();
 
 	//Add prop and player to entities
 	entities.push(&house);

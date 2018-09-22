@@ -12,7 +12,8 @@ pub struct Prop<'a> {
 	texture: &'a Texture<'a>,
 	position: Vector2<f32>,
 	drawing_box: Rect,
-	bounding_box: Rect
+	bounding_box: Rect,
+	destination_box: Rect
 }
 
 pub fn new<'a>(t: &'a Texture<'a>, p: Vector2<f32>, draw_box: Rect) -> Prop<'a> {
@@ -20,22 +21,22 @@ pub fn new<'a>(t: &'a Texture<'a>, p: Vector2<f32>, draw_box: Rect) -> Prop<'a> 
 	let x = p.x;
 	let y = p.y;
 
+	let dest = Rect::new(p.x as i32, p.y as i32, draw_box.width(), draw_box.height());
+
+
 	Prop {
 		texture: t,
 		position: p,
 		drawing_box: draw_box,
-		bounding_box: Rect::new(x as i32, y as i32, texture_query.width, texture_query.height)
+		bounding_box: Rect::new(x as i32, y as i32, texture_query.width, texture_query.height),
+		destination_box: dest
 	}
 }
 
 impl<'a> Entity for Prop<'a> {
-	fn update(&mut self, duration: Duration) {
-
-	}
+	fn update(&mut self, duration: Duration) {}
 
 	fn draw(&self, canvas: &mut Canvas<Window>) {
-		let dest = Rect::new(self.position.x as i32, self.position.y as i32, self.drawing_box.width(), self.drawing_box.height());
-
-		canvas.copy(&self.texture, self.drawing_box, dest);
+		canvas.copy(&self.texture, self.drawing_box, self.destination_box);
 	}
 }
