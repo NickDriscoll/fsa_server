@@ -7,6 +7,7 @@ use sdl2::video::Window;
 use std::time::Duration;
 use vector2;
 use entity::Entity;
+use level_parser::EntityType;
 
 const SPEED: f32 = 400.0;
 
@@ -59,5 +60,9 @@ impl Entity for Player {
 	fn draw(&self, canvas: &mut Canvas<Window>) {		
 		canvas.set_draw_color(Color::RGB(255, 0, 255));
 		canvas.fill_rect(rect::Rect::new(self.position.x as i32, self.position.y as i32, 25, 25));
+	}
+
+	fn get_entity_type(&self) -> &EntityType {
+		&EntityType::Player
 	}
 }

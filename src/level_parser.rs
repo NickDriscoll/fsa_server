@@ -1,5 +1,5 @@
 use std::vec::Vec;
-use std::cell;
+use std::cell::RefCell;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
@@ -7,27 +7,26 @@ use std::mem;
 use entity::Entity;
 
 //An association between the type of entity and the byte they're encoded as
-enum EntityType {
+pub enum EntityType {
 	Player = 0x00,
 	Building = 0x01
 }
 
-use level_parser::EntityType::*;
 impl EntityType {
 	fn resolve(i: u8) -> Option<EntityType> {
 		match i {
-			0x0 => { Some(Player) }
-			0x1 => { Some(Building) }
+			0x0 => { Some(EntityType::Player) }
+			0x1 => { Some(EntityType::Building) }
 			_ => { None }
 		}
 	}
 }
 
-pub fn save(path: &str, entities: &mut Vec<&cell::RefCell<Entity>>) {
+pub fn save(path: &str, entities: &Vec<&RefCell<Entity>>) {
 
 }
 
-pub fn parse(path: &str, entities: &mut Vec<&cell::RefCell<Entity>>) {
+pub fn parse(path: &str, entities: &mut Vec<&RefCell<Entity>>) {
 	//Open the file
 	let mut level_file = match File::open(path) {
 		Ok(file) => {

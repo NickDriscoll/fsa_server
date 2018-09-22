@@ -31,6 +31,7 @@ use network_manager::TouchButtons;
 use player::Player;
 use keyboard_manager::KeyboardManager;
 use network_manager::NetworkManager;
+use level_parser::EntityType;
 
 fn init_keyboard<'a>(player: &'a RefCell<Player>) -> KeyboardManager<'a> {
 	let mut keyboard_manager = keyboard_manager::new();
@@ -97,10 +98,13 @@ fn main() {
 	//Initialize event handler
 	let mut event_handler = event_handler::new(event_pump, &mut keyboard_manager);
 
-	let house = RefCell::new(prop::new(&adobe_texture, vector2::new(200.0, 100.0), Rect::new(0, 0, 95, 159)));
+	let house = RefCell::new(prop::new(&adobe_texture, vector2::new(200.0, 100.0), Rect::new(0, 0, 95, 159), EntityType::Building));
 
 	//Initialize vector of entities
 	let mut entities: Vec<&RefCell<Entity>> = Vec::new();
+
+	//Load starting level
+
 
 	//Add prop and player to entities
 	entities.push(&house);
@@ -116,15 +120,15 @@ fn main() {
 
 		//Handle network input
 		network_manager.handle_input();
-
-		//Clear the screen
-		canvas.set_draw_color(Color::RGB(0, 255, 255));
-		canvas.clear();
 		
 		//Update entities
 		for entity in entities.iter_mut() {
 			entity.borrow_mut().update(current_instant.duration_since(previous_instant));
 		}
+
+		//Clear the screen
+		canvas.set_draw_color(Color::RGB(0, 255, 255));
+		canvas.clear();
 
 		//Draw background
 		canvas.copy(&background_texture, None, None);
