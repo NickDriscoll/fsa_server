@@ -7,6 +7,7 @@ use std::mem;
 use entity::Entity;
 
 //An association between the type of entity and the byte they're encoded as
+#[derive(Copy, Clone)]
 pub enum EntityType {
 	Player = 0x00,
 	Building = 0x01
@@ -23,15 +24,26 @@ impl EntityType {
 }
 
 pub fn save(path: &str, entities: &Vec<&RefCell<Entity>>) {
+	const BUFFER_SIZE: usize = mem::size_of::<u8>() + 2 * mem::size_of::<f32>();
+	let mut level_file = match File::create(path) {
+		Ok(file) => { file }
+		Err(e) => {
+			panic!("{}", e);
+		}
+	};
 
+	for entity in entities {
+		let mut buffer: [u8; BUFFER_SIZE] = [0; BUFFER_SIZE];
+		buffer[0] = *entity.borrow().get_entity_type() as u8;
+
+		level_file.write(&buffer);
+	}
 }
 
-pub fn parse(path: &str, entities: &mut Vec<&RefCell<Entity>>) {
+pub fn load(path: &str, entities: &mut Vec<&RefCell<Entity>>) {
 	//Open the file
 	let mut level_file = match File::open(path) {
-		Ok(file) => {
-			file
-		}
+		Ok(file) => { file }
 		Err(e) => {
 			panic!("{}", e);
 		}

@@ -46,4 +46,8 @@ impl<'a> Entity for Prop<'a> {
 	fn get_entity_type(&self) -> &EntityType {
 		&self.entity_type
 	}
+
+	fn get_position(&self) -> &Vector2<f32> {
+		&self.position
+	}
 }

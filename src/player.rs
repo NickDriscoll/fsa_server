@@ -65,4 +65,8 @@ impl Entity for Player {
 	fn get_entity_type(&self) -> &EntityType {
 		&EntityType::Player
 	}
+
+	fn get_position(&self) -> &vector2::Vector2<f32> {
+		&self.position
+	}
 }
