@@ -34,6 +34,7 @@ use player::Player;
 use keyboard_manager::KeyboardManager;
 use network_manager::NetworkManager;
 use level_parser::EntityType;
+use entity_manager::EntityManager;
 
 fn init_keyboard<'a>(player: &'a RefCell<Player>) -> KeyboardManager<'a> {
 	let mut keyboard_manager = keyboard_manager::new();

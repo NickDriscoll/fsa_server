@@ -1,6 +1,9 @@
 use std::vec::Vec;
 use std::collections::HashMap;
+use std::time::Duration;
 use entity::Entity;
+use sdl2::render::Canvas;
+use sdl2::video::Window;
 
 /*
 	The purpose of this struct is to provide an API for
@@ -11,7 +14,7 @@ pub struct EntityManager {
 	next_index: u32
 }
 
-impl<'a> EntityManager {
+impl EntityManager {
 	pub fn new() -> EntityManager {
 		EntityManager {
 			entities: HashMap::new(),
@@ -31,5 +34,24 @@ impl<'a> EntityManager {
 
 	pub fn get_entity_mut(&mut self, id: u32) -> Option<&mut Box<Entity>> {
 		self.entities.get_mut(&id)
+	}
+
+	pub fn clear(&mut self) {
+		self.entities.clear();
+		self.next_index = 0;
+	}
+
+	pub fn update(&mut self, elapsed: Duration) {
+		for entity in self.entities.values_mut() {
+			entity.update(elapsed);
+		}
+	}
+
+	pub fn draw(&self, canvas: &mut Canvas<Window>) {
+		//Have sorting code here
+
+		for entity in self.entities.values() {
+			entity.draw(canvas);
+		}
 	}
 }
