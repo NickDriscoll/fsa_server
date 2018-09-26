@@ -28,16 +28,8 @@ impl<'a> KeyboardManager<'a> {
 
 	pub fn handle_keyup_event(&mut self, keycode: Keycode) {
 		match self.keyup_commands.get_mut(&keycode) {
-			Some(command_enum) => {
-				match command_enum {
-					Command::HaltX(command) => {
-						command.execute();
-					}
-					Command::HaltY(command) => {
-						command.execute();
-					}
-					_ => { }
-				}
+			Some(command) => {
+				command.execute();
 			}
 			None => { }
 		}
