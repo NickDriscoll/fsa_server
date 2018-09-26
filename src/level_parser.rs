@@ -1,3 +1,5 @@
+extern crate byteorder;
+
 use std::vec::Vec;
 use std::cell::RefCell;
 use std::fs::File;
@@ -5,6 +7,9 @@ use std::io::Read;
 use std::io::Write;
 use std::mem;
 use entity::Entity;
+use byteorder::{ByteOrder, LittleEndian};
+
+const LEVEL_DIRECTORY: &str = "levels/";
 
 //An association between the type of entity and the byte they're encoded as
 #[derive(Copy, Clone)]
@@ -34,8 +39,11 @@ pub fn save(path: &str, entities: &Vec<&RefCell<Entity>>) {
 
 	for entity in entities {
 		let mut buffer: [u8; BUFFER_SIZE] = [0; BUFFER_SIZE];
-		buffer[0] = *entity.borrow().get_entity_type() as u8;
-
+		let ent = entity.borrow();
+		buffer[0] = *ent.get_entity_type() as u8;
+		let pos = ent.get_position();
+		LittleEndian::write_f32(&mut buffer[1..5], pos.x);
+		LittleEndian::write_f32(&mut buffer[5..9], pos.y);
 		level_file.write(&buffer);
 	}
 }

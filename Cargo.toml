@@ -3,6 +3,9 @@ name = "fsaserver"
 version = "0.1.0"
 authors = ["Nick Driscoll <nick.a.mavros@gmail.com>"]
 
+[dependencies]
+byteorder = "1"
+
 [dependencies.sdl2]
 version = "0.31.0"
 default-features = false
