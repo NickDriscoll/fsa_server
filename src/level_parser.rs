@@ -4,6 +4,7 @@ use std::fs::File;
 use std::io::Read;
 use std::io::Write;
 use std::mem;
+use std::string::String;
 use entity::Entity;
 use byteorder::{ByteOrder, LittleEndian};
 
@@ -28,7 +29,10 @@ impl EntityType {
 
 pub fn save(path: &str, entities: &Vec<&RefCell<Entity>>) {
 	const BUFFER_SIZE: usize = mem::size_of::<u8>() + 2 * mem::size_of::<f32>();
-	let mut level_file = match File::create(path) {
+
+	let mut true_path = String::from(LEVEL_DIRECTORY);
+	true_path.push_str(path);
+	let mut level_file = match File::create(true_path) {
 		Ok(file) => { file }
 		Err(e) => {
 			panic!("{}", e);

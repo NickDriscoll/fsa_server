@@ -106,7 +106,6 @@ fn main() {
 
 	//Load starting level
 
-
 	//Add prop and player to entities
 	entities.push(&house);
 	entities.push(&player);
