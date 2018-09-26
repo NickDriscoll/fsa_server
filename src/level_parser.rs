@@ -1,5 +1,3 @@
-extern crate byteorder;
-
 use std::vec::Vec;
 use std::cell::RefCell;
 use std::fs::File;

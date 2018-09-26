@@ -1,5 +1,3 @@
-extern crate sdl2;
-
 use sdl2::render::Texture;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
