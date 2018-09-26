@@ -10,6 +10,7 @@ mod event_handler;
 mod network_manager;
 mod prop;
 mod level_parser;
+mod entity_manager;
 
 use sdl2::pixels::Color;
 use sdl2::keyboard::Keycode;
