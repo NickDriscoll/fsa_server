@@ -14,5 +14,5 @@ pub trait Entity {
 
 	fn get_position(&self) -> &Vector2<f32>;
 
-	fn handle_command(&mut self, command: &Command);
+	fn handle_command(&mut self, command: Command);
 }

@@ -70,9 +70,9 @@ impl Entity for Player {
 		&self.position
 	}
 
-	fn handle_command(&mut self, command: &Command) {
+	fn handle_command(&mut self, command: Command) {
 		match command {
-			MoveRightCommand => {
+			MoveRight => {
 				self.move_right();
 			}
 			_ => { }

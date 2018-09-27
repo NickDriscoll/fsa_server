@@ -50,10 +50,5 @@ impl<'a> Entity for Prop<'a> {
 		&self.position
 	}
 
-	fn handle_command(&mut self, command: &Command) {
-		match command {
-
-			_ => { }
-		}
-	}
+	fn handle_command(&mut self, command: Command) {}
 }
