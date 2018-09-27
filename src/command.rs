@@ -12,11 +12,11 @@ pub enum Command {
 }
 
 pub struct CommandEmitter<'a> {
-	entity_manager: &'a EntityManager
+	entity_manager: &'a mut EntityManager
 }
 
-impl CommandEmitter<'a> {
-	pub fn new<'a>(entmgr: &'a EntityManager) -> CommandEmitter<'a> {
+impl<'a> CommandEmitter<'a> {
+	pub fn new(entmgr: &'a mut EntityManager) -> CommandEmitter<'a> {
 		CommandEmitter {
 			entity_manager: entmgr
 		}
@@ -28,7 +28,7 @@ impl CommandEmitter<'a> {
 				ent.handle_command(command);
 			}
 			None => {
-				println!("{} not in entity manager");
+				println!("{} not in entity manager", id);
 			}
 		}
 	}

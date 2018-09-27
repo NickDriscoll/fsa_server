@@ -17,21 +17,23 @@ pub struct Prop<'a> {
 	entity_type: EntityType
 }
 
-pub fn new<'a>(t: &'a Texture<'a>, p: Vector2<f32>, draw_box: Rect, e_type: EntityType) -> Prop<'a> {
-	let texture_query = t.query();
-	let x = p.x;
-	let y = p.y;
+impl<'a> Prop<'a> {	
+	pub fn new(t: &'a Texture<'a>, p: Vector2<f32>, draw_box: Rect, e_type: EntityType) -> Prop<'a> {
+		let texture_query = t.query();
+		let x = p.x;
+		let y = p.y;
 
-	let dest = Rect::new(p.x as i32, p.y as i32, draw_box.width(), draw_box.height());
+		let dest = Rect::new(p.x as i32, p.y as i32, draw_box.width(), draw_box.height());
 
 
-	Prop {
-		texture: t,
-		position: p,
-		drawing_box: draw_box,
-		bounding_box: Rect::new(x as i32, y as i32, texture_query.width, texture_query.height),
-		destination_box: dest,
-		entity_type: e_type
+		Prop {
+			texture: t,
+			position: p,
+			drawing_box: draw_box,
+			bounding_box: Rect::new(x as i32, y as i32, texture_query.width, texture_query.height),
+			destination_box: dest,
+			entity_type: e_type
+		}
 	}
 }
 

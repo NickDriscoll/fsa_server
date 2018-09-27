@@ -7,6 +7,7 @@ use std::vec::Vec;
 use std::sync::mpsc;
 use std::io::Read;
 use command::Command;
+use command::CommandEmitter;
 
 const MAX_PLAYERS: usize = 4;
 const BUFFER_SIZE: usize = 2;
@@ -20,64 +21,64 @@ pub enum TouchButtons {
 	A = 0x20
 }
 
-pub struct NetworkManager {
+pub struct NetworkManager<'a> {
 	listener_thread: thread::JoinHandle<()>,
 	phones: Vec<TcpStream>,
 	remove_indices: Vec<usize>,
 	rx: mpsc::Receiver<TcpStream>,
 	bitmask_maps_down: Vec<HashMap<u8, (u32, Command)>>,
-	bitmask_maps_up: Vec<HashMap<u8, (u32, Command)>>
+	bitmask_maps_up: Vec<HashMap<u8, (u32, Command)>>,
+	command_emitter: &'a CommandEmitter<'a>
 }
 
-//Start a thread to listen for incoming client connections
-pub fn begin_listening() -> NetworkManager {
-	let (tx, rx) = mpsc::channel();
-
-	let listener_thread = thread::spawn(move || {
-		let listener = match TcpListener::bind("0.0.0.0:1337") {
-			Ok(r) => {
-				r
-			}
-			Err(e) => {
-				panic!("Unable to bind TcpListener.");
-			}
-		};
-		println!("Listener is {:?}", listener);
-
-		for stream in listener.incoming() {
-			println!("Stream detected.");
-			let stream = stream.unwrap();
-			stream.set_nonblocking(true);
-			match tx.send(stream) {
-				Err(e) => {
-					println!("An error occurred while sending data over a channel: {:?}", e);
-				}
-				_ => { }
-			}
-		}
-	});
-
-	println!("Started listening...");
-
-	//Each player will have their own HashMap
-	let mut bitmask_maps_down = Vec::with_capacity(MAX_PLAYERS);
-	let mut bitmask_maps_up = Vec::with_capacity(MAX_PLAYERS);
-	for i in 0..MAX_PLAYERS {
-		bitmask_maps_down.push(HashMap::new());
-		bitmask_maps_up.push(HashMap::new());
-	}
-
-	NetworkManager {
-		listener_thread,
-		phones: Vec::with_capacity(MAX_PLAYERS),
-		remove_indices: Vec::with_capacity(MAX_PLAYERS),
-		rx,
-		bitmask_maps_down,
-		bitmask_maps_up
-	}
-}
 
 impl<'a> NetworkManager<'a> {
+	//Start a thread to listen for incoming client connections
+	pub fn begin_listening(cmdemit: &'a CommandEmitter) -> NetworkManager<'a> {
+		let (tx, rx) = mpsc::channel();
+
+		let listener_thread = thread::spawn(move || {
+			let listener = match TcpListener::bind("0.0.0.0:1337") {
+				Ok(r) => {
+					r
+				}
+				Err(e) => {
+					panic!("Unable to bind TcpListener.");
+				}
+			};
+			println!("Listener is {:?}", listener);
+
+			for stream in listener.incoming() {
+				println!("Stream detected.");
+				let stream = stream.unwrap();
+				stream.set_nonblocking(true);
+				match tx.send(stream) {
+					Err(e) => {
+						println!("An error occurred while sending data over a channel: {:?}", e);
+					}
+					_ => { }
+				}
+			}
+		});
+
+		let mut maps_down = Vec::new();
+		let mut maps_up = Vec::new();
+		for i in 0..MAX_PLAYERS {
+			maps_down.push(HashMap::new());
+			maps_up.push(HashMap::new());
+		}
+
+		NetworkManager {
+			listener_thread,
+			phones: Vec::with_capacity(MAX_PLAYERS),
+			remove_indices: Vec::with_capacity(MAX_PLAYERS),
+			rx,
+			bitmask_maps_down: maps_down,
+			bitmask_maps_up: maps_up,
+			command_emitter: cmdemit
+		}
+	}
+
 	pub fn handle_input(&mut self) {
 		//First thing to do is check if there are any pending connections
 		match self.rx.try_recv() {
@@ -106,9 +107,8 @@ impl<'a> NetworkManager<'a> {
 					//Touchdown commands
 					for j in 0..8 {
 						match self.bitmask_maps_down[i].get_mut(&((1 << j) & buffer[0])) {
-							Some(command) => {
-								println!("Executing!");
-								command.execute();
+							Some((id, command)) => {
+
 							}
 							None => { }
 						}						
@@ -117,8 +117,8 @@ impl<'a> NetworkManager<'a> {
 					//Touchup commands
 					for j in 0..8 {
 						match self.bitmask_maps_up[i].get_mut(&((1 << j) & buffer[1])) {
-							Some(command) => {
-								command.execute();
+							Some((id, command)) => {
+								
 							}
 							None => { }
 						}
@@ -135,11 +135,11 @@ impl<'a> NetworkManager<'a> {
 		self.remove_indices.clear();
 	}
 
-	pub fn add_touchdown_binding(&mut self, mask: u8, command: Command<'a>, player: usize) {
+	pub fn add_touchdown_binding(&mut self, mask: u8, command: (u32, Command), player: usize) {
 		self.bitmask_maps_down[player - 1].insert(mask, command);
 	}
 
-	pub fn add_touchup_binding(&mut self, mask: u8, command: Command<'a>, player: usize) {
+	pub fn add_touchup_binding(&mut self, mask: u8, command: (u32, Command), player: usize) {
 		self.bitmask_maps_up[player - 1].insert(mask, command);
 	}
 }

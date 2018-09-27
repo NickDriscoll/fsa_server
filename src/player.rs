@@ -7,7 +7,6 @@ use vector2;
 use entity::Entity;
 use level_parser::EntityType;
 use command::Command;
-use move_right_command::MoveRightCommand;
 
 const SPEED: f32 = 400.0;
 
@@ -24,6 +23,13 @@ pub fn new(position: vector2::Vector2<f32>) -> Player {
 }
 
 impl Player {
+	pub fn new(position: vector2::Vector2<f32>) -> Player {
+		Player {
+			position: position,
+			velocity: vector2::new(0.0, 0.0)
+		}
+	}
+
 	pub fn move_left(&mut self) {
 		self.velocity.x = -SPEED;
 	}
@@ -72,9 +78,6 @@ impl Entity for Player {
 
 	fn handle_command(&mut self, command: Command) {
 		match command {
-			MoveRight => {
-				self.move_right();
-			}
 			_ => { }
 		}
 	}

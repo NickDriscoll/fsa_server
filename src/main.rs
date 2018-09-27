@@ -22,22 +22,17 @@ use std::vec::Vec;
 use std::cell::RefCell;
 use std::time::Instant;
 use command::Command;
-use command::quit_command;
-use command::move_right_command;
-use command::move_left_command;
-use command::move_up_command;
-use command::move_down_command;
-use command::halt_x_command;
-use command::halt_y_command;
+use command::CommandEmitter;
 use network_manager::TouchButtons;
 use player::Player;
 use keyboard_manager::KeyboardManager;
 use network_manager::NetworkManager;
 use level_parser::EntityType;
 use entity_manager::EntityManager;
+use event_handler::EventHandler;
 
-fn init_keyboard<'a>(player: &'a RefCell<Player>) -> KeyboardManager<'a> {
-	let mut keyboard_manager = keyboard_manager::new();
+fn init_keyboard<'a>(cmdemit: &'a CommandEmitter) -> KeyboardManager<'a> {
+	let mut keyboard_manager = KeyboardManager::new(cmdemit);
 	/*
 	//Add key bindings
 	keyboard_manager.add_keydown_binding(Keycode::Escape, Command::Quit(quit_command::new()));
@@ -56,8 +51,8 @@ fn init_keyboard<'a>(player: &'a RefCell<Player>) -> KeyboardManager<'a> {
 	keyboard_manager
 }
 
-fn init_network<'a>(player: &'a RefCell<Player>) -> NetworkManager<'a> {
-	let mut network_manager = network_manager::begin_listening();
+fn init_network<'a>(cmdemit: &'a CommandEmitter) -> NetworkManager<'a> {
+	let mut network_manager = NetworkManager::begin_listening(cmdemit);
 
 	//Add the network bindings
 	/*
@@ -85,35 +80,17 @@ fn main() {
 
 	let mut canvas = window.into_canvas().build().unwrap();
 
-	let event_pump = sdl_context.event_pump().unwrap();
 	let texture_creator = canvas.texture_creator();
 
 	let background_texture = texture_creator.load_texture("assets/grass.png").unwrap();
 	let adobe_texture = texture_creator.load_texture("assets/adobe.png").unwrap();
 
-	//Create player
-	//Consider vector of players parallel to the bitmask_maps
-	let player = RefCell::new(player::new(vector2::new(100.0, 200.0)));
-
-	//Initialize keyboard manager
-	let mut keyboard_manager = init_keyboard(&player);	
-
-	//Initialize network manager
-	let mut network_manager = init_network(&player);
-
-	//Initialize event handler
-	let mut event_handler = event_handler::new(event_pump, &mut keyboard_manager);
-
-	let house = RefCell::new(prop::new(&adobe_texture, vector2::new(200.0, 100.0), Rect::new(0, 0, 95, 159), EntityType::Building));
-
-	//Initialize vector of entities
-	let mut entities: Vec<&RefCell<Entity>> = Vec::new();
-
-	//Load starting level
-
-	//Add prop and player to entities
-	entities.push(&house);
-	entities.push(&player);
+	//Initialize subsystems
+	let mut entity_manager = EntityManager::new();
+	let command_emitter = CommandEmitter::new(&mut entity_manager);
+	let keyboard_manager = init_keyboard(&command_emitter);
+	let mut network_manager = init_network(&command_emitter);
+	let mut event_handler = EventHandler::new(sdl_context.event_pump().unwrap(), &keyboard_manager);	
 
 	let mut previous_instant = Instant::now();
 
@@ -127,9 +104,7 @@ fn main() {
 		network_manager.handle_input();
 		
 		//Update entities
-		for entity in entities.iter_mut() {
-			entity.borrow_mut().update(current_instant.duration_since(previous_instant));
-		}
+		entity_manager.update(current_instant.duration_since(previous_instant));
 
 		//Clear the screen
 		canvas.set_draw_color(Color::RGB(0, 255, 255));
@@ -138,9 +113,7 @@ fn main() {
 		//Draw background
 		canvas.copy(&background_texture, None, None);
 		//Draw entities
-		for entity in entities.iter() {
-			entity.borrow().draw(&mut canvas);
-		}
+		entity_manager.draw(&mut canvas);
 
 		canvas.present();
 		previous_instant = current_instant;
