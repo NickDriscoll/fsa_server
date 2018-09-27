@@ -6,6 +6,7 @@ use std::time::Duration;
 use vector2::Vector2;
 use entity::Entity;
 use level_parser::EntityType;
+use command::Command;
 
 pub struct Prop<'a> {
 	texture: &'a Texture<'a>,
@@ -47,5 +48,12 @@ impl<'a> Entity for Prop<'a> {
 
 	fn get_position(&self) -> &Vector2<f32> {
 		&self.position
+	}
+
+	fn handle_command(&mut self, command: &Command) {
+		match command {
+
+			_ => { }
+		}
 	}
 }

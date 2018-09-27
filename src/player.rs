@@ -6,6 +6,8 @@ use std::time::Duration;
 use vector2;
 use entity::Entity;
 use level_parser::EntityType;
+use command::Command;
+use move_right_command::MoveRightCommand;
 
 const SPEED: f32 = 400.0;
 
@@ -66,5 +68,14 @@ impl Entity for Player {
 
 	fn get_position(&self) -> &vector2::Vector2<f32> {
 		&self.position
+	}
+
+	fn handle_command(&mut self, command: &Command) {
+		match command {
+			MoveRightCommand => {
+				self.move_right();
+			}
+			_ => { }
+		}
 	}
 }

@@ -38,7 +38,7 @@ use entity_manager::EntityManager;
 
 fn init_keyboard<'a>(player: &'a RefCell<Player>) -> KeyboardManager<'a> {
 	let mut keyboard_manager = keyboard_manager::new();
-
+	/*
 	//Add key bindings
 	keyboard_manager.add_keydown_binding(Keycode::Escape, Command::Quit(quit_command::new()));
 	keyboard_manager.add_keydown_binding(Keycode::Q, Command::Quit(quit_command::new()));
@@ -51,6 +51,7 @@ fn init_keyboard<'a>(player: &'a RefCell<Player>) -> KeyboardManager<'a> {
 	keyboard_manager.add_keyup_binding(Keycode::Down, Command::HaltY(halt_y_command::new(player)));
 	keyboard_manager.add_keyup_binding(Keycode::Left, Command::HaltX(halt_x_command::new(player)));
 	keyboard_manager.add_keyup_binding(Keycode::Right, Command::HaltX(halt_x_command::new(player)));
+	*/
 
 	keyboard_manager
 }
@@ -59,6 +60,7 @@ fn init_network<'a>(player: &'a RefCell<Player>) -> NetworkManager<'a> {
 	let mut network_manager = network_manager::begin_listening();
 
 	//Add the network bindings
+	/*
 	network_manager.add_touchdown_binding(TouchButtons::Left as u8, Command::MoveLeft(move_left_command::new(player)), 1);
 	network_manager.add_touchdown_binding(TouchButtons::Down as u8, Command::MoveDown(move_down_command::new(player)), 1);
 	network_manager.add_touchdown_binding(TouchButtons::Up as u8, Command::MoveUp(move_up_command::new(player)), 1);
@@ -68,6 +70,7 @@ fn init_network<'a>(player: &'a RefCell<Player>) -> NetworkManager<'a> {
 	network_manager.add_touchup_binding(TouchButtons::Right as u8, Command::HaltX(halt_x_command::new(player)), 1);
 	network_manager.add_touchup_binding(TouchButtons::Down as u8, Command::HaltY(halt_y_command::new(player)), 1);
 	network_manager.add_touchup_binding(TouchButtons::Up as u8, Command::HaltY(halt_y_command::new(player)), 1);
+	*/
 
 	network_manager
 }

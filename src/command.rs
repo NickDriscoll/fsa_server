@@ -67,43 +67,61 @@ pub mod quit_command {
 }
 
 pub mod move_right_command {
-	use player::Player;
-	use std::cell;
+	use entity_manager::EntityManager;
+	use command::Command;
 
 	pub struct MoveRightCommand<'a> {
-		player: &'a cell::RefCell<Player>
-	}
+		player_id: u32,
+		entity_manager: &'a EntityManager
 
-	pub fn new<'a>(p: &'a cell::RefCell<Player>) -> MoveRightCommand<'a> {
-		MoveRightCommand {
-			player: p
-		}
 	}
 
 	impl<'a> MoveRightCommand<'a> {
-		pub fn execute(&mut self) {
-			self.player.borrow_mut().move_right();
+		pub fn new(id: u32, entmgr: &'a EntityManager) -> MoveRightCommand<'a> {
+			MoveRightCommand {
+				player_id: id,
+				entity_manager: entmgr
+			}
+		}
+
+		pub fn execute(&self) {
+			match self.entity_manager.get_mut(self.player_id) {
+				Some(e) => {
+					e.handle_command(&Command::MoveRight);
+				}
+				None => {
+					println!("Entity manager does not contain id: {}", self.player_id);
+				}
+			}
 		}
 	}
 }
 
 pub mod move_left_command {
-	use player::Player;
-	use std::cell;
+	use entity_manager::EntityManager;
 
 	pub struct MoveLeftCommand<'a> {
-		player: &'a cell::RefCell<Player>
-	}
-
-	pub fn new<'a>(p: &'a cell::RefCell<Player>) -> MoveLeftCommand<'a> {
-		MoveLeftCommand {
-			player: p
-		}
+		player_id: u32,
+		entity_manager: &'a EntityManager
 	}
 
 	impl<'a> MoveLeftCommand<'a> {
+		pub fn new(id: u32, entmgr: &'a EntityManager) -> MoveLeftCommand<'a> {
+			MoveLeftCommand {
+				player_id: id,
+				entity_manager: entmgr
+			}
+		}
+
 		pub fn execute(&self) {
-			self.player.borrow_mut().move_left();
+			match self.entity_manager.get_mut(self.player_id) {
+				Some(e) => {
+					e.handle_command();
+				}
+				None => {
+					println!("Entity manager does not contain id: {}", self.player_id);
+				}
+			}
 		}
 	}
 }

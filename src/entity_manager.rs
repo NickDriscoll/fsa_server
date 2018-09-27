@@ -28,11 +28,11 @@ impl EntityManager {
 		self.next_index - 1
 	}
 
-	pub fn get_entity(&self, id: u32) -> Option<&Box<Entity>> {
+	pub fn get(&self, id: u32) -> Option<&Box<Entity>> {
 		self.entities.get(&id)
 	}
 
-	pub fn get_entity_mut(&mut self, id: u32) -> Option<&mut Box<Entity>> {
+	pub fn get_mut(&mut self, id: u32) -> Option<&mut Box<Entity>> {
 		self.entities.get_mut(&id)
 	}
 

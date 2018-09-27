@@ -3,6 +3,7 @@ use sdl2::video::Window;
 use std::time::Duration;
 use level_parser::EntityType;
 use vector2::Vector2;
+use command::Command;
 
 pub trait Entity {
 	fn update(&mut self, elapsed: Duration);
@@ -12,4 +13,6 @@ pub trait Entity {
 	fn get_entity_type(&self) -> &EntityType;
 
 	fn get_position(&self) -> &Vector2<f32>;
+
+	fn handle_command(&mut self, command: &Command);
 }
