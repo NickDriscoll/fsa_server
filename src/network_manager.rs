@@ -20,17 +20,17 @@ pub enum TouchButtons {
 	A = 0x20
 }
 
-pub struct NetworkManager<'a> {
+pub struct NetworkManager {
 	listener_thread: thread::JoinHandle<()>,
 	phones: Vec<TcpStream>,
 	remove_indices: Vec<usize>,
 	rx: mpsc::Receiver<TcpStream>,
-	bitmask_maps_down: Vec<HashMap<u8, Command<'a>>>,
-	bitmask_maps_up: Vec<HashMap<u8, Command<'a>>>
+	bitmask_maps_down: Vec<HashMap<u8, (u32, Command)>>,
+	bitmask_maps_up: Vec<HashMap<u8, (u32, Command)>>
 }
 
 //Start a thread to listen for incoming client connections
-pub fn begin_listening<'a>() -> NetworkManager<'a> {
+pub fn begin_listening() -> NetworkManager {
 	let (tx, rx) = mpsc::channel();
 
 	let listener_thread = thread::spawn(move || {
