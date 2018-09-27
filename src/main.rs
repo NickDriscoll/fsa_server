@@ -87,10 +87,10 @@ fn main() {
 
 	//Initialize subsystems
 	let mut entity_manager = EntityManager::new();
-	let command_emitter = CommandEmitter::new(&mut entity_manager);
-	let keyboard_manager = init_keyboard(&command_emitter);
+	let command_emitter = CommandEmitter::new(&entity_manager);
+	let mut keyboard_manager = init_keyboard(&command_emitter);
 	let mut network_manager = init_network(&command_emitter);
-	let mut event_handler = EventHandler::new(sdl_context.event_pump().unwrap(), &keyboard_manager);	
+	let mut event_handler = EventHandler::new(sdl_context.event_pump().unwrap(), &mut keyboard_manager);	
 
 	let mut previous_instant = Instant::now();
 

@@ -12,11 +12,11 @@ pub enum Command {
 }
 
 pub struct CommandEmitter<'a> {
-	entity_manager: &'a mut EntityManager
+	entity_manager: &'a EntityManager
 }
 
 impl<'a> CommandEmitter<'a> {
-	pub fn new(entmgr: &'a mut EntityManager) -> CommandEmitter<'a> {
+	pub fn new(entmgr: &'a EntityManager) -> CommandEmitter<'a> {
 		CommandEmitter {
 			entity_manager: entmgr
 		}

@@ -41,7 +41,7 @@ impl EntityManager {
 		self.next_index = 0;
 	}
 
-	pub fn update(&mut self, elapsed: Duration) {
+	pub fn update(&self, elapsed: Duration) {
 		for entity in self.entities.values_mut() {
 			entity.update(elapsed);
 		}
