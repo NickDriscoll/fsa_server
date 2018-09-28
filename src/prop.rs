@@ -44,8 +44,8 @@ impl<'a> Entity for Prop<'a> {
 		canvas.copy(&self.texture, self.drawing_box, self.destination_box);
 	}
 
-	fn get_entity_type(&self) -> &EntityType {
-		&self.entity_type
+	fn get_entity_type(&self) -> EntityType {
+		self.entity_type
 	}
 
 	fn get_position(&self) -> &Vector2<f32> {

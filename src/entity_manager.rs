@@ -1,5 +1,6 @@
 use std::vec::Vec;
 use std::collections::HashMap;
+use std::collections::hash_map::Values;
 use std::time::Duration;
 use entity::Entity;
 use sdl2::render::Canvas;
@@ -22,6 +23,7 @@ impl EntityManager {
 		}
 	}
 
+	//Adds an entity to the collection and returns its id
 	pub fn add_entity(&mut self, entity: Box<Entity>) -> u32 {
 		self.entities.insert(self.next_index, entity);
 		self.next_index += 1;
@@ -41,7 +43,11 @@ impl EntityManager {
 		self.next_index = 0;
 	}
 
-	pub fn update(&self, elapsed: Duration) {
+	pub fn iter(&self) -> Values<u32, Box<Entity>> {
+		self.entities.values()
+	}
+
+	pub fn update(&mut self, elapsed: Duration) {
 		for entity in self.entities.values_mut() {
 			entity.update(elapsed);
 		}

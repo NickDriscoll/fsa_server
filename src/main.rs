@@ -86,25 +86,29 @@ fn main() {
 	let adobe_texture = texture_creator.load_texture("assets/adobe.png").unwrap();
 
 	//Initialize subsystems
-	let mut entity_manager = EntityManager::new();
+	let mut entity_manager = RefCell::new(EntityManager::new());
 	let command_emitter = CommandEmitter::new(&entity_manager);
 	let mut keyboard_manager = init_keyboard(&command_emitter);
-	let mut network_manager = init_network(&command_emitter);
-	let mut event_handler = EventHandler::new(sdl_context.event_pump().unwrap(), &mut keyboard_manager);	
+	let mut network_manager = init_network(&command_emitter);	
+
+	//Bind Q to quit
+	keyboard_manager.add_keydown_binding(Keycode::Q, (0, Command::Quit));
+
+	let mut event_handler = EventHandler::new(sdl_context.event_pump().unwrap(), &mut keyboard_manager);
 
 	let mut previous_instant = Instant::now();
 
 	loop {
 		let current_instant = Instant::now();
 
-		//Handle events
+		//Handle sdl events
 		event_handler.handle_events();
 
 		//Handle network input
 		network_manager.handle_input();
 		
 		//Update entities
-		entity_manager.update(current_instant.duration_since(previous_instant));
+		entity_manager.borrow_mut().update(current_instant.duration_since(previous_instant));
 
 		//Clear the screen
 		canvas.set_draw_color(Color::RGB(0, 255, 255));
@@ -113,7 +117,7 @@ fn main() {
 		//Draw background
 		canvas.copy(&background_texture, None, None);
 		//Draw entities
-		entity_manager.draw(&mut canvas);
+		entity_manager.borrow().draw(&mut canvas);
 
 		canvas.present();
 		previous_instant = current_instant;

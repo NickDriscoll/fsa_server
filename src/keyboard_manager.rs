@@ -21,7 +21,7 @@ impl<'a> KeyboardManager<'a> {
 	pub fn handle_keydown_event(&mut self, keycode: Keycode) {
 		match self.keydown_commands.get_mut(&keycode) {
 			Some((id, command)) => {
-
+				self.command_emitter.emit_command(*id, *command);
 			}
 			None => {
 				println!("You pressed the unbound key: {}", keycode);
@@ -32,7 +32,7 @@ impl<'a> KeyboardManager<'a> {
 	pub fn handle_keyup_event(&mut self, keycode: Keycode) {
 		match self.keyup_commands.get_mut(&keycode) {
 			Some((id, command)) => {
-
+				self.command_emitter.emit_command(*id, *command);
 			}
 			None => { }
 		}

@@ -5,7 +5,7 @@ use std::io::Read;
 use std::io::Write;
 use std::mem;
 use std::string::String;
-use entity::Entity;
+use entity_manager::EntityManager;
 use byteorder::{ByteOrder, LittleEndian};
 
 const LEVEL_DIRECTORY: &str = "levels/";
@@ -27,7 +27,7 @@ impl EntityType {
 	}
 }
 
-pub fn save(path: &str, entities: &Vec<&RefCell<Entity>>) {
+pub fn save(path: &str, entities: &EntityManager) {
 	const BUFFER_SIZE: usize = mem::size_of::<u8>() + 2 * mem::size_of::<f32>();
 
 	let mut true_path = String::from(LEVEL_DIRECTORY);
@@ -39,18 +39,17 @@ pub fn save(path: &str, entities: &Vec<&RefCell<Entity>>) {
 		}
 	};
 
-	for entity in entities {
+	for entity in entities.iter() {
 		let mut buffer: [u8; BUFFER_SIZE] = [0; BUFFER_SIZE];
-		let ent = entity.borrow();
-		buffer[0] = *ent.get_entity_type() as u8;
-		let pos = ent.get_position();
+		buffer[0] = entity.get_entity_type() as u8;
+		let pos = entity.get_position();
 		LittleEndian::write_f32(&mut buffer[1..5], pos.x);
 		LittleEndian::write_f32(&mut buffer[5..9], pos.y);
 		level_file.write(&buffer);
 	}
 }
 
-pub fn load(path: &str, entities: &mut Vec<&RefCell<Entity>>) {
+pub fn load(path: &str, entities: &mut EntityManager) {
 	//Open the file
 	let mut level_file = match File::open(path) {
 		Ok(file) => { file }

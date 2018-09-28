@@ -10,7 +10,7 @@ pub trait Entity {
 
 	fn draw(&self, canvas: &mut Canvas<Window>);
 
-	fn get_entity_type(&self) -> &EntityType;
+	fn get_entity_type(&self) -> EntityType;
 
 	fn get_position(&self) -> &Vector2<f32>;
 

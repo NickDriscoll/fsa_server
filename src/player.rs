@@ -68,8 +68,8 @@ impl Entity for Player {
 		canvas.fill_rect(rect::Rect::new(self.position.x as i32, self.position.y as i32, 25, 25));
 	}
 
-	fn get_entity_type(&self) -> &EntityType {
-		&EntityType::Player
+	fn get_entity_type(&self) -> EntityType {
+		EntityType::Player
 	}
 
 	fn get_position(&self) -> &vector2::Vector2<f32> {
