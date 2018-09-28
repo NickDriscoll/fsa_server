@@ -45,4 +45,9 @@ impl<'a> KeyboardManager<'a> {
 	pub fn add_keyup_binding(&mut self, keycode: Keycode, command: (u32, Command)) {
 		self.keyup_commands.insert(keycode, command);
 	}
+
+	pub fn clear_bindings(&mut self) {
+		self.keydown_commands.clear();
+		self.keyup_commands.clear();
+	}
 }

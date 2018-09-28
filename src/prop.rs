@@ -25,7 +25,6 @@ impl<'a> Prop<'a> {
 
 		let dest = Rect::new(p.x as i32, p.y as i32, draw_box.width(), draw_box.height());
 
-
 		Prop {
 			texture: t,
 			position: p,

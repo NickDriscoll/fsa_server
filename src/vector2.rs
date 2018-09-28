@@ -3,9 +3,11 @@ pub struct Vector2<T> {
 	pub y: T
 }
 
-pub fn new<T>(x: T, y: T) -> Vector2<T> {
-	Vector2 {
-		x: x,
-		y: y
+impl<T> Vector2<T> {
+	pub fn new(x: T, y: T) -> Vector2<T> {
+		Vector2 {
+			x: x,
+			y: y
+		}
 	}
 }

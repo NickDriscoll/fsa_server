@@ -3,7 +3,7 @@ use sdl2::rect;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
 use std::time::Duration;
-use vector2;
+use vector2::Vector2;
 use entity::Entity;
 use level_parser::EntityType;
 use command::Command;
@@ -11,47 +11,40 @@ use command::Command;
 const SPEED: f32 = 400.0;
 
 pub struct Player {
-	position: vector2::Vector2<f32>,
-	velocity: vector2::Vector2<f32>
-}
-
-pub fn new(position: vector2::Vector2<f32>) -> Player {
-	Player {
-		position: position,
-		velocity: vector2::new(0.0, 0.0)
-	}
+	position: Vector2<f32>,
+	velocity: Vector2<f32>
 }
 
 impl Player {
-	pub fn new(position: vector2::Vector2<f32>) -> Player {
+	pub fn new(position: Vector2<f32>) -> Player {
 		Player {
 			position: position,
-			velocity: vector2::new(0.0, 0.0)
+			velocity: Vector2::new(0.0, 0.0)
 		}
 	}
 
-	pub fn move_left(&mut self) {
+	fn move_left(&mut self) {
 		self.velocity.x = -SPEED;
 	}
 
-	pub fn move_right(&mut self) {
+	fn move_right(&mut self) {
 		self.velocity.x = SPEED;
 	}
 
-	pub fn move_up(&mut self) {
+	fn move_up(&mut self) {
 		self.velocity.y = -SPEED;
 	}
 
-	pub fn move_down(&mut self) {
+	fn move_down(&mut self) {
 		self.velocity.y = SPEED;
 	}
 
-	pub fn halt_x_velocity(&mut self)
+	fn halt_x_velocity(&mut self)
 	{
 		self.velocity.x = 0.0;
 	}
 
-	pub fn halt_y_velocity(&mut self)
+	fn halt_y_velocity(&mut self)
 	{
 		self.velocity.y = 0.0;
 	}
@@ -72,12 +65,30 @@ impl Entity for Player {
 		EntityType::Player
 	}
 
-	fn get_position(&self) -> &vector2::Vector2<f32> {
+	fn get_position(&self) -> &Vector2<f32> {
 		&self.position
 	}
 
 	fn handle_command(&mut self, command: Command) {
 		match command {
+			Command::MoveDown => {
+				self.move_down();
+			}
+			Command::MoveUp => {
+				self.move_up();
+			}
+			Command::MoveLeft => {
+				self.move_left();
+			}
+			Command::MoveRight => {
+				self.move_right();
+			}
+			Command::HaltX => {
+				self.halt_x_velocity();
+			}
+			Command::HaltY => {
+				self.halt_y_velocity();
+			}
 			_ => { }
 		}
 	}

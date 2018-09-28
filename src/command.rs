@@ -42,7 +42,7 @@ impl<'a> CommandEmitter<'a> {
 
 	fn emit_system_command(&self, command: Command) {
 		match command {
-			Quit => {
+			Command::Quit => {
 				process::exit(0);
 			}
 			_ => {}

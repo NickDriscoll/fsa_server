@@ -18,6 +18,7 @@ use sdl2::image;
 use sdl2::image::LoadTexture;
 use sdl2::rect::Rect;
 use entity::Entity;
+use vector2::Vector2;
 use std::vec::Vec;
 use std::cell::RefCell;
 use std::time::Instant;
@@ -30,42 +31,41 @@ use network_manager::NetworkManager;
 use level_parser::EntityType;
 use entity_manager::EntityManager;
 use event_handler::EventHandler;
+use prop::Prop;
 
-fn init_keyboard<'a>(cmdemit: &'a CommandEmitter) -> KeyboardManager<'a> {
+const MAX_PLAYERS: usize = 4;
+
+fn init_keyboard<'a>(cmdemit: &'a CommandEmitter, player_ids: [u32; MAX_PLAYERS]) -> KeyboardManager<'a> {
 	let mut keyboard_manager = KeyboardManager::new(cmdemit);
-	/*
-	//Add key bindings
-	keyboard_manager.add_keydown_binding(Keycode::Escape, Command::Quit(quit_command::new()));
-	keyboard_manager.add_keydown_binding(Keycode::Q, Command::Quit(quit_command::new()));
-	keyboard_manager.add_keydown_binding(Keycode::Right, Command::MoveRight(move_right_command::new(player)));
-	keyboard_manager.add_keydown_binding(Keycode::Left, Command::MoveLeft(move_left_command::new(player)));
-	keyboard_manager.add_keydown_binding(Keycode::Up, Command::MoveUp(move_up_command::new(player)));
-	keyboard_manager.add_keydown_binding(Keycode::Down, Command::MoveDown(move_down_command::new(player)));
 
-	keyboard_manager.add_keyup_binding(Keycode::Up, Command::HaltY(halt_y_command::new(player)));
-	keyboard_manager.add_keyup_binding(Keycode::Down, Command::HaltY(halt_y_command::new(player)));
-	keyboard_manager.add_keyup_binding(Keycode::Left, Command::HaltX(halt_x_command::new(player)));
-	keyboard_manager.add_keyup_binding(Keycode::Right, Command::HaltX(halt_x_command::new(player)));
-	*/
+	//Add key bindings
+	keyboard_manager.add_keydown_binding(Keycode::Escape, (0, Command::Quit));
+	keyboard_manager.add_keydown_binding(Keycode::Q, (0, Command::Quit));
+	keyboard_manager.add_keydown_binding(Keycode::Down, (player_ids[0], Command::MoveDown));
+	keyboard_manager.add_keydown_binding(Keycode::Up, (player_ids[0], Command::MoveUp));
+	keyboard_manager.add_keydown_binding(Keycode::Left, (player_ids[0], Command::MoveLeft));
+	keyboard_manager.add_keydown_binding(Keycode::Right, (player_ids[0], Command::MoveRight));
+
+	keyboard_manager.add_keyup_binding(Keycode::Left, (player_ids[0], Command::HaltX));
+	keyboard_manager.add_keyup_binding(Keycode::Right, (player_ids[0], Command::HaltX));
+	keyboard_manager.add_keyup_binding(Keycode::Up, (player_ids[0], Command::HaltY));
+	keyboard_manager.add_keyup_binding(Keycode::Down, (player_ids[0], Command::HaltY));
 
 	keyboard_manager
 }
 
-fn init_network<'a>(cmdemit: &'a CommandEmitter) -> NetworkManager<'a> {
+fn init_network<'a>(cmdemit: &'a CommandEmitter, player_ids: [u32; MAX_PLAYERS]) -> NetworkManager<'a> {
 	let mut network_manager = NetworkManager::begin_listening(cmdemit);
 
-	//Add the network bindings
-	/*
-	network_manager.add_touchdown_binding(TouchButtons::Left as u8, Command::MoveLeft(move_left_command::new(player)), 1);
-	network_manager.add_touchdown_binding(TouchButtons::Down as u8, Command::MoveDown(move_down_command::new(player)), 1);
-	network_manager.add_touchdown_binding(TouchButtons::Up as u8, Command::MoveUp(move_up_command::new(player)), 1);
-	network_manager.add_touchdown_binding(TouchButtons::Right as u8, Command::MoveRight(move_right_command::new(player)), 1);
+	network_manager.add_touchdown_binding(TouchButtons::Left as u8, (player_ids[0], Command::MoveLeft), 1);
+	network_manager.add_touchdown_binding(TouchButtons::Right as u8, (player_ids[0], Command::MoveRight), 1);
+	network_manager.add_touchdown_binding(TouchButtons::Up as u8, (player_ids[0], Command::MoveUp), 1);
+	network_manager.add_touchdown_binding(TouchButtons::Down as u8, (player_ids[0], Command::MoveDown), 1);
 
-	network_manager.add_touchup_binding(TouchButtons::Left as u8, Command::HaltX(halt_x_command::new(player)), 1);
-	network_manager.add_touchup_binding(TouchButtons::Right as u8, Command::HaltX(halt_x_command::new(player)), 1);
-	network_manager.add_touchup_binding(TouchButtons::Down as u8, Command::HaltY(halt_y_command::new(player)), 1);
-	network_manager.add_touchup_binding(TouchButtons::Up as u8, Command::HaltY(halt_y_command::new(player)), 1);
-	*/
+	network_manager.add_touchup_binding(TouchButtons::Left as u8, (player_ids[0], Command::HaltX), 1);
+	network_manager.add_touchup_binding(TouchButtons::Right as u8, (player_ids[0], Command::HaltX), 1);
+	network_manager.add_touchup_binding(TouchButtons::Up as u8, (player_ids[0], Command::HaltY), 1);
+	network_manager.add_touchup_binding(TouchButtons::Down as u8, (player_ids[0], Command::HaltY), 1);
 
 	network_manager
 }
@@ -86,13 +86,13 @@ fn main() {
 	let adobe_texture = texture_creator.load_texture("assets/adobe.png").unwrap();
 
 	//Initialize subsystems
-	let mut entity_manager = RefCell::new(EntityManager::new());
-	let command_emitter = CommandEmitter::new(&entity_manager);
-	let mut keyboard_manager = init_keyboard(&command_emitter);
-	let mut network_manager = init_network(&command_emitter);	
+	let mut player_ids: [u32; MAX_PLAYERS] = [0; MAX_PLAYERS];
+	let entity_manager = RefCell::new(EntityManager::new());
+	player_ids[0] = entity_manager.borrow_mut().add_entity(Box::new(Player::new(Vector2::new(100.0, 200.0))));
 
-	//Bind Q to quit
-	keyboard_manager.add_keydown_binding(Keycode::Q, (0, Command::Quit));
+	let command_emitter = CommandEmitter::new(&entity_manager);
+	let mut keyboard_manager = init_keyboard(&command_emitter, player_ids);
+	let mut network_manager = init_network(&command_emitter, player_ids);
 
 	let mut event_handler = EventHandler::new(sdl_context.event_pump().unwrap(), &mut keyboard_manager);
 

@@ -9,7 +9,6 @@ use std::io::Read;
 use command::Command;
 use command::CommandEmitter;
 
-const MAX_PLAYERS: usize = 4;
 const BUFFER_SIZE: usize = 2;
 
 pub enum TouchButtons {
@@ -63,15 +62,15 @@ impl<'a> NetworkManager<'a> {
 
 		let mut maps_down = Vec::new();
 		let mut maps_up = Vec::new();
-		for i in 0..MAX_PLAYERS {
+		for i in 0..::MAX_PLAYERS {
 			maps_down.push(HashMap::new());
 			maps_up.push(HashMap::new());
 		}
 
 		NetworkManager {
 			listener_thread,
-			phones: Vec::with_capacity(MAX_PLAYERS),
-			remove_indices: Vec::with_capacity(MAX_PLAYERS),
+			phones: Vec::with_capacity(::MAX_PLAYERS),
+			remove_indices: Vec::with_capacity(::MAX_PLAYERS),
 			rx,
 			bitmask_maps_down: maps_down,
 			bitmask_maps_up: maps_up,
@@ -83,7 +82,7 @@ impl<'a> NetworkManager<'a> {
 		//First thing to do is check if there are any pending connections
 		match self.rx.try_recv() {
 			Ok(stream) => {
-				if (self.phones.len() < MAX_PLAYERS) {
+				if (self.phones.len() < ::MAX_PLAYERS) {
 					self.phones.push(stream);
 				}
 			}
@@ -108,7 +107,7 @@ impl<'a> NetworkManager<'a> {
 					for j in 0..8 {
 						match self.bitmask_maps_down[i].get_mut(&((1 << j) & buffer[0])) {
 							Some((id, command)) => {
-
+								self.command_emitter.emit_command(*id, *command);
 							}
 							None => { }
 						}						
@@ -118,7 +117,7 @@ impl<'a> NetworkManager<'a> {
 					for j in 0..8 {
 						match self.bitmask_maps_up[i].get_mut(&((1 << j) & buffer[1])) {
 							Some((id, command)) => {
-								
+								self.command_emitter.emit_command(*id, *command);
 							}
 							None => { }
 						}
