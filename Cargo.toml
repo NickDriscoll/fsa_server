@@ -10,4 +10,4 @@ byteorder = "1"
 git = "https://github.com/AngryLawyer/rust-sdl2"
 version = "0.31"
 default-features = false
-features = ["image"]
+features = ["image", "mixer"]
