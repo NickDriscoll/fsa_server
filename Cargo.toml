@@ -7,6 +7,7 @@ authors = ["Nick Driscoll <nick.a.mavros@gmail.com>"]
 byteorder = "1"
 
 [dependencies.sdl2]
-version = "0.31.0"
+git = "https://github.com/AngryLawyer/rust-sdl2"
+version = "0.31"
 default-features = false
 features = ["image"]
