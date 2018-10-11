@@ -95,7 +95,6 @@ impl<'a> NetworkManager<'a> {
 					self.remove_indices.push(i);
 				}
 				Ok(n) => {
-					assert!(n == 9);
 					//Command emission actually happens in this case
 					if buffer[0] != 0 {
 						println!("Received {:#x}", buffer[0]);
@@ -121,7 +120,7 @@ impl<'a> NetworkManager<'a> {
 						}
 					}
 				}
-				Err(e) => { println!("{}", e); }
+				Err(e) => {  }
 			}
 		}
 
