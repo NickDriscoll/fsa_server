@@ -9,7 +9,7 @@ use level_parser::EntityType;
 use command::Command;
 
 pub struct Prop<'a> {
-	texture: &'a Texture<'a>,
+	texture: Texture<'a>,
 	position: Vector2<f32>,
 	drawing_box: Rect,
 	bounding_box: Rect,
@@ -18,7 +18,7 @@ pub struct Prop<'a> {
 }
 
 impl<'a> Prop<'a> {	
-	pub fn new(t: &'a Texture<'a>, p: Vector2<f32>, draw_box: Rect, e_type: EntityType) -> Prop<'a> {
+	pub fn new(t: Texture<'a>, p: Vector2<f32>, draw_box: Rect, e_type: EntityType) -> Prop<'a> {
 		let texture_query = t.query();
 		let x = p.x;
 		let y = p.y;
@@ -37,7 +37,7 @@ impl<'a> Prop<'a> {
 }
 
 impl<'a> Entity for Prop<'a> {
-	fn update(&mut self, duration: Duration) {}
+	fn update(&mut self, _duration: Duration) {}
 
 	fn draw(&self, canvas: &mut Canvas<Window>) {
 		canvas.copy(&self.texture, self.drawing_box, self.destination_box);
@@ -51,5 +51,5 @@ impl<'a> Entity for Prop<'a> {
 		&self.position
 	}
 
-	fn handle_command(&mut self, command: Command) {}
+	fn handle_command(&mut self, _command: Command) {}
 }

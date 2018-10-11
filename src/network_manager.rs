@@ -2,7 +2,6 @@ use std::net::TcpListener;
 use std::net::TcpStream;
 use std::collections::HashMap;
 use std::thread;
-use std::panic;
 use std::vec::Vec;
 use std::sync::mpsc;
 use std::io::Read;
@@ -21,7 +20,6 @@ pub enum TouchButtons {
 }
 
 pub struct NetworkManager<'a> {
-	listener_thread: thread::JoinHandle<()>,
 	phones: Vec<TcpStream>,
 	remove_indices: Vec<usize>,
 	rx: mpsc::Receiver<TcpStream>,
@@ -36,13 +34,13 @@ impl<'a> NetworkManager<'a> {
 	pub fn begin_listening(cmdemit: &'a CommandEmitter) -> NetworkManager<'a> {
 		let (tx, rx) = mpsc::channel();
 
-		let listener_thread = thread::spawn(move || {
+		thread::spawn(move || {
 			let listener = match TcpListener::bind("0.0.0.0:1337") {
 				Ok(r) => {
 					r
 				}
 				Err(e) => {
-					panic!("Unable to bind TcpListener.");
+					panic!("Unable to bind TcpListener: {}", e);
 				}
 			};
 			println!("Listener is {:?}", listener);
@@ -62,13 +60,12 @@ impl<'a> NetworkManager<'a> {
 
 		let mut maps_down = Vec::new();
 		let mut maps_up = Vec::new();
-		for i in 0..::MAX_PLAYERS {
+		for _i in 0..::MAX_PLAYERS {
 			maps_down.push(HashMap::new());
 			maps_up.push(HashMap::new());
 		}
 
 		NetworkManager {
-			listener_thread,
 			phones: Vec::with_capacity(::MAX_PLAYERS),
 			remove_indices: Vec::with_capacity(::MAX_PLAYERS),
 			rx,
@@ -82,7 +79,7 @@ impl<'a> NetworkManager<'a> {
 		//First thing to do is check if there are any pending connections
 		match self.rx.try_recv() {
 			Ok(stream) => {
-				if (self.phones.len() < ::MAX_PLAYERS) {
+				if self.phones.len() < ::MAX_PLAYERS {
 					self.phones.push(stream);
 				}
 			}
@@ -98,6 +95,7 @@ impl<'a> NetworkManager<'a> {
 					self.remove_indices.push(i);
 				}
 				Ok(n) => {
+					assert!(n == 9);
 					//Command emission actually happens in this case
 					if buffer[0] != 0 {
 						println!("Received {:#x}", buffer[0]);
@@ -123,7 +121,7 @@ impl<'a> NetworkManager<'a> {
 						}
 					}
 				}
-				Err(e) => { }
+				Err(e) => { println!("{}", e); }
 			}
 		}
 

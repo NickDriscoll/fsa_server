@@ -14,12 +14,9 @@ mod entity_manager;
 
 use sdl2::pixels::Color;
 use sdl2::keyboard::Keycode;
-use sdl2::image;
 use sdl2::image::LoadTexture;
 use sdl2::rect::Rect;
-use entity::Entity;
 use vector2::Vector2;
-use std::vec::Vec;
 use std::cell::RefCell;
 use std::time::Instant;
 use command::Command;
@@ -28,9 +25,9 @@ use network_manager::TouchButtons;
 use player::Player;
 use keyboard_manager::KeyboardManager;
 use network_manager::NetworkManager;
-use level_parser::EntityType;
 use entity_manager::EntityManager;
 use event_handler::EventHandler;
+use level_parser::EntityType;
 use prop::Prop;
 
 const MAX_PLAYERS: usize = 4;
@@ -74,9 +71,7 @@ fn main() {
 	let sdl_context = sdl2::init().unwrap();
 	let video_subsystem = sdl_context.video().unwrap();
 
-	let window = video_subsystem.window("FSA", 1280, 720)
-		.build()
-		.unwrap();
+	let window = video_subsystem.window("FSA", 1280, 720).build().unwrap();
 
 	let mut canvas = window.into_canvas().build().unwrap();
 
@@ -85,10 +80,10 @@ fn main() {
 	let background_texture = texture_creator.load_texture("assets/grass.png").unwrap();
 	let adobe_texture = texture_creator.load_texture("assets/adobe.png").unwrap();
 
-	//Initialize subsystems
 	let mut player_ids: [u32; MAX_PLAYERS] = [0; MAX_PLAYERS];
 	let entity_manager = RefCell::new(EntityManager::new());
 	player_ids[0] = entity_manager.borrow_mut().add_entity(Box::new(Player::new(Vector2::new(100.0, 200.0))));
+	//let prop_id = entity_manager.borrow_mut().add_entity(Box::new(Prop::new(adobe_texture, Vector2::new(100.0, 100.0), Rect::new(0, 0, 100, 100), EntityType::Building)));
 
 	let command_emitter = CommandEmitter::new(&entity_manager);
 	let mut keyboard_manager = init_keyboard(&command_emitter, player_ids);
@@ -115,7 +110,13 @@ fn main() {
 		canvas.clear();
 
 		//Draw background
-		canvas.copy(&background_texture, None, None);
+		match canvas.copy(&background_texture, None, None) {
+			Err(s) => {
+				println!("Error drawing background: {}", s);
+			}
+			_ => {}
+		}
+
 		//Draw entities
 		entity_manager.borrow().draw(&mut canvas);
 
