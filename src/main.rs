@@ -11,11 +11,11 @@ mod network_manager;
 mod prop;
 mod level_parser;
 mod entity_manager;
+mod texture_manager;
 
 use sdl2::pixels::Color;
 use sdl2::keyboard::Keycode;
 use sdl2::image::LoadTexture;
-use sdl2::rect::Rect;
 use vector2::Vector2;
 use std::cell::RefCell;
 use std::time::Instant;
@@ -27,8 +27,9 @@ use keyboard_manager::KeyboardManager;
 use network_manager::NetworkManager;
 use entity_manager::EntityManager;
 use event_handler::EventHandler;
-use level_parser::EntityType;
-use prop::Prop;
+use texture_manager::TextureManager;
+//use level_parser::EntityType;
+//use prop::Prop;
 
 const MAX_PLAYERS: usize = 4;
 
@@ -74,6 +75,8 @@ fn main() {
 	let window = video_subsystem.window("FSA", 1280, 720).build().unwrap();
 
 	let mut canvas = window.into_canvas().build().unwrap();
+
+	let texture_manager = TextureManager::new(&canvas);
 
 	let texture_creator = canvas.texture_creator();
 
