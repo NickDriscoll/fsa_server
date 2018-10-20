@@ -92,7 +92,7 @@ fn main() {
 	let mut keyboard_manager = init_keyboard(&command_emitter, player_ids);
 	let mut network_manager = init_network(&command_emitter, player_ids);
 
-	let mut event_handler = EventHandler::new(sdl_context.event_pump().unwrap(), &mut keyboard_manager);
+	let mut event_handler = EventHandler::new(sdl_context.event_pump().unwrap(), keyboard_manager);
 
 	let mut previous_instant = Instant::now();
 
@@ -104,7 +104,7 @@ fn main() {
 
 		//Handle network input
 		network_manager.handle_input();
-		
+
 		//Update entities
 		entity_manager.borrow_mut().update(current_instant.duration_since(previous_instant));
 

@@ -6,11 +6,11 @@ use keyboard_manager::KeyboardManager;
 
 pub struct EventHandler<'a> {
 	event_pump: EventPump,
-	keyboard_manager: &'a mut KeyboardManager<'a>
+	keyboard_manager: KeyboardManager<'a>
 }
 
 impl<'a> EventHandler<'a> {
-	pub fn new(e: EventPump, k: &'a mut KeyboardManager<'a>) -> EventHandler<'a> {
+	pub fn new(e: EventPump, k: KeyboardManager<'a>) -> EventHandler<'a> {
 		EventHandler {
 			event_pump: e,
 			keyboard_manager: k

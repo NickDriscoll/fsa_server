@@ -1,12 +1,10 @@
 use sdl2::render::TextureCreator;
 use sdl2::render::Canvas;
 use sdl2::render::Texture;
-use sdl2::surface::Surface;
-use sdl2::surface::SurfaceContext;
 use sdl2::video::Window;
 use sdl2::video::WindowContext;
+use sdl2::image::LoadTexture;
 use std::collections::HashMap;
-
 
 pub struct TextureManager<'a> {
 	texture_creator: TextureCreator<WindowContext>,
